@@ -42,7 +42,7 @@ async def show_experts(callback: CallbackQuery):
             # Если нет фото, редактируем текст
             await callback.message.edit_text(
                 "🔍 Эксперты не найдены.\n\nВ настоящее время нет доступных экспертов.",
-                reply_markup=get_expert_detail_keyboard()
+                reply_markup=get_back_keyboard()
             )
         
         logger.info(f"Пользователь {user_id} ({full_name}) просмотрел пустой список экспертов")
