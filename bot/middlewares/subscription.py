@@ -2,7 +2,6 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware, Bot
 from aiogram.types import Message, CallbackQuery
 
-from config import CHANNEL_ID
 from utils import check_user_subscription
 from keyboards import get_subscription_keyboard
 from database import is_user_authorized

@@ -26,7 +26,6 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
             callback_data=f"expert_{expert.id}"
         )
     
-    # Размещаем кнопки в одну колонку
     builder.adjust(1)
     
     # Добавляем кнопки пагинации, если страниц больше одной
@@ -64,8 +63,7 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
                 text=" ",
                 callback_data="empty"
             ))
-        
-        # Добавляем строку с кнопками навигации
+
         builder.row(*navigation_buttons)
     else:
         # Если всего одна страница, добавляем только кнопку поиска
@@ -147,20 +145,17 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
     
     # Добавляем строку с кнопками навигации
     builder.row(*navigation_buttons)
-    
-    # Добавляем кнопку "Задать вопрос"
+
     builder.button(
         text="✏️ Задать вопрос",
         callback_data=f"ask_expert_{expert_id}"
     )
-    
-    # Добавляем кнопку "Назад к списку экспертов"
+
     builder.button(
         text="🔙 Назад к списку экспертов",
         callback_data="experts"
     )
-    
-    # Размещаем кнопки: первая строка - 3 кнопки навигации, остальные - по 1 кнопке
+
     builder.adjust(3, 1, 1)
     
     return builder.as_markup()

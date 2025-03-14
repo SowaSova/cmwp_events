@@ -8,7 +8,7 @@ from database import get_experts, get_expert_by_id, search_experts, get_or_creat
 from keyboards import (
     get_expert_detail_keyboard, get_back_to_experts_keyboard, 
     get_skip_name_keyboard, get_confirm_question_keyboard, get_ask_experts_keyboard,
-    get_ask_search_results_keyboard, get_ask_search_keyboard
+    get_ask_search_results_keyboard, get_ask_search_keyboard, get_back_keyboard
 )
 from handlers.states import AskQuestionStates
 
@@ -29,7 +29,7 @@ async def start_ask_question(callback: CallbackQuery, state: FSMContext):
     if not experts:
         await callback.message.edit_text(
             "🔍 Эксперты не найдены.\n\nВ настоящее время нет доступных экспертов для вопросов.",
-            reply_markup=get_expert_detail_keyboard()
+            reply_markup=get_back_keyboard()
         )
         logger.info(f"Пользователь {user_id} ({full_name}) попытался задать вопрос, но экспертов нет")
         await callback.answer()
@@ -101,8 +101,7 @@ async def start_ask_question_search(callback: CallbackQuery, state: FSMContext):
     
     # Устанавливаем состояние ожидания запроса поиска
     await state.set_state(AskQuestionStates.waiting_for_expert)
-    
-    # Отправляем сообщение с просьбой ввести запрос
+
     await callback.message.edit_text(
         "🔍 Поиск экспертов\n\nВведите ФИО или часть ФИО эксперта для поиска:",
         reply_markup=get_ask_search_keyboard()
@@ -130,8 +129,7 @@ async def process_ask_question_search(message: Message, state: FSMContext):
     
     # Ищем экспертов по запросу
     experts = await search_experts(search_query)
-    
-    # Если эксперты не найдены, отправляем сообщение
+
     if not experts:
         await message.answer(
             f"🔍 По запросу «{search_query}» ничего не найдено.\n\nПопробуйте изменить запрос.",
@@ -139,8 +137,7 @@ async def process_ask_question_search(message: Message, state: FSMContext):
         )
         logger.info(f"Пользователь {user_id} ({full_name}) не нашел экспертов для вопроса по запросу '{search_query}'")
         return
-    
-    # Отправляем результаты поиска с клавиатурой для задания вопроса
+
     await message.answer(
         f"🔍 Результаты поиска по запросу «{search_query}»:\n\nНайдено экспертов: {len(experts)}",
         reply_markup=get_ask_search_results_keyboard(experts)
@@ -161,11 +158,9 @@ async def select_expert_for_question(callback: CallbackQuery, state: FSMContext)
     full_name = callback.from_user.full_name
 
     expert_id = int(callback.data.split("_")[-1])
-    
-    # Получаем информацию об эксперте
+
     expert = await get_expert_by_id(expert_id)
-    
-    # Если эксперт не найден, отправляем сообщение об ошибке
+
     if expert is None:
         await callback.message.edit_text(
             "❌ Эксперт не найден.\n\nВозможно, эксперт был удален.",
@@ -279,13 +274,11 @@ async def process_user_name(message: Message, state: FSMContext):
         return
 
     await state.update_data(user_name=user_name)
-    
-    # Обновляем ФИО пользователя в базе данных
+
     await update_user_real_name(user_id, user_name)
 
     await state.set_state(AskQuestionStates.confirm_question)
-    
-    # Получаем данные из состояния
+
     data = await state.get_data()
     expert_name = data.get("expert_name")
     question_text = data.get("question_text")
@@ -308,8 +301,7 @@ async def skip_user_name(callback: CallbackQuery, state: FSMContext):
     """
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
-    
-    # Получаем данные из состояния
+
     data = await state.get_data()
     from_expert_view = data.get("from_expert_view", False)
     expert_id = data.get("expert_id")

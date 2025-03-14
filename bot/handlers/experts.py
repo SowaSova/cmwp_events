@@ -6,9 +6,9 @@ import os
 
 from utils.logger import logger
 from database import get_experts, get_expert_by_id, search_experts, get_total_experts_count, get_expert_position
-from keyboards import get_experts_keyboard, get_expert_detail_keyboard, get_search_keyboard, get_search_results_keyboard, get_expert_detail_with_slider_keyboard
+from keyboards import get_experts_keyboard, get_expert_detail_keyboard, get_search_keyboard, get_search_results_keyboard, get_expert_detail_with_slider_keyboard, get_back_keyboard
 from config import MEDIA_ROOT
-from handlers.states import ExpertSearch, AskQuestionStates
+from handlers.states import ExpertSearch
 
 experts_router = Router()
 
@@ -34,7 +34,7 @@ async def show_experts(callback: CallbackQuery):
                 await callback.bot.send_message(
                     chat_id=callback.message.chat.id,
                     text="🔍 Эксперты не найдены.\n\nВ настоящее время нет доступных экспертов.",
-                    reply_markup=get_expert_detail_keyboard()
+                    reply_markup=get_back_keyboard()
                 )
             except Exception as e:
                 logger.warning(f"Не удалось обработать сообщение: {e}")
@@ -86,8 +86,7 @@ async def show_experts_page(callback: CallbackQuery):
     
     # Получаем список экспертов для указанной страницы
     experts, current_page, total_pages = await get_experts(page=page, per_page=10)
-    
-    # Если экспертов нет, отправляем сообщение об ошибке
+
     if not experts:
         await callback.message.edit_text(
             "❌ Эксперты не найдены.\n\nВозможно, список экспертов пуст."
@@ -95,8 +94,7 @@ async def show_experts_page(callback: CallbackQuery):
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть список экспертов (страница {page}), но список пуст")
         await callback.answer()
         return
-    
-    # Отправляем сообщение со списком экспертов
+
     await callback.message.edit_text(
         "👨‍🏫 Список экспертов\n\nВыберите эксперта для просмотра подробной информации:",
         reply_markup=get_experts_keyboard(experts, current_page, total_pages)
@@ -112,26 +110,18 @@ async def show_expert_detail(callback: CallbackQuery, state: FSMContext):
     Обрабатывает callback-запрос expert_X.
     Отображает детальную информацию об эксперте.
     """
-    # Получаем текущее состояние пользователя
     current_state = await state.get_state()
     
-    # Если пользователь находится в состоянии ожидания выбора эксперта для вопроса,
-    # не обрабатываем этот callback
     if current_state == "AskQuestionStates:waiting_for_expert":
-        return
-    
-    # Если callback_data начинается с "expert_ask_", не обрабатываем этот callback
-    if callback.data.startswith("expert_ask_"):
         return
     
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
-    
-    # Если callback_data начинается с "expert_nav_", обрабатываем навигацию между экспертами
+
     if callback.data.startswith("expert_nav_"):
         position = int(callback.data.split("_")[-1])
         # Получаем список всех экспертов, отсортированных по имени
-        experts, _, _ = await get_experts(page=1, per_page=1000)  # Получаем всех экспертов
+        experts, _, _ = await get_experts(page=1, per_page=1000)
         if 0 < position <= len(experts):
             expert_id = experts[position - 1].id
             # Вместо изменения callback.data вызываем отображение эксперта напрямую
@@ -225,8 +215,7 @@ async def start_expert_search(callback: CallbackQuery, state: FSMContext):
     full_name = callback.from_user.full_name
     
     await state.set_state(ExpertSearch.waiting_for_query)
-    
-    # Отправляем сообщение с просьбой ввести запрос
+
     await callback.message.edit_text(
         "🔍 Поиск экспертов\n\nВведите ФИО или часть ФИО эксперта для поиска:",
         reply_markup=get_search_keyboard()
@@ -244,8 +233,7 @@ async def process_expert_search(message: Message, state: FSMContext):
     user_id = message.from_user.id
     full_name = message.from_user.full_name
     search_query = message.text.strip()
-    
-    # Если запрос слишком короткий, просим ввести более длинный запрос
+
     if len(search_query) < 3:
         await message.answer(
             "⚠️ Запрос слишком короткий. Пожалуйста, введите не менее 3 символов.",

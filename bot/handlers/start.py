@@ -20,8 +20,7 @@ async def start_command(message: Message, state: FSMContext):
     user_id = message.from_user.id
     username = message.from_user.username
     full_name = message.from_user.full_name
-    
-    # Сбрасываем состояние пользователя
+
     await state.clear()
     
     # Проверяем наличие deep link и его соответствие ожидаемому хешу
@@ -37,21 +36,17 @@ async def start_command(message: Message, state: FSMContext):
         else:
             logger.warning(f"Пользователь {user_id} ({full_name}) использовал неверный deep link: {deep_link}")
     
-    # Создаем или обновляем пользователя в базе данных
     user = await get_or_create_user(user_id, full_name, username, deep_link, is_authorized)
     
-    # Если пользователь не авторизован, отправляем сообщение об ошибке
     if not is_authorized and not user.is_authorized:
         await message.answer(
             "⚠️ Для использования бота необходимо перейти по специальной ссылке."
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
         return
-    
-    # Проверяем подписку на канал
+
     is_subscribed = await check_user_subscription(message.bot, user_id)
-    
-    # Если пользователь не подписан на канал, отправляем сообщение с кнопкой подписки
+
     if not is_subscribed:
         await message.answer(
             "⚠️ Для использования бота необходимо подписаться на канал.",
@@ -59,11 +54,9 @@ async def start_command(message: Message, state: FSMContext):
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
         return
-    
-    # Получаем приветственное сообщение из базы данных
+
     welcome_message = await get_welcome_message()
-    
-    # Отправляем приветственное сообщение с главной клавиатурой
+
     await message.answer(
         welcome_message,
         reply_markup=get_main_keyboard()
@@ -80,11 +73,9 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     username = callback.from_user.username
     full_name = callback.from_user.full_name
-    
-    # Сбрасываем состояние пользователя
+
     await state.clear()
-    
-    # Создаем или обновляем пользователя в базе данных
+
     user = await get_or_create_user(user_id, full_name, username)
     
     if not user.is_authorized:
@@ -95,11 +86,9 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
         await callback.answer()
         return
-    
-    # Проверяем подписку на канал
+
     is_subscribed = await check_user_subscription(callback.bot, user_id)
-    
-    # Если пользователь не подписан на канал, отправляем сообщение с кнопкой подписки
+
     if not is_subscribed:
         await callback.message.edit_text(
             "⚠️ Для использования бота необходимо подписаться на канал.",
@@ -108,11 +97,9 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
         await callback.answer()
         return
-    
-    # Получаем приветственное сообщение из базы данных
+
     welcome_message = await get_welcome_message()
-    
-    # Отправляем приветственное сообщение с главной клавиатурой
+
     await callback.message.edit_text(
         welcome_message,
         reply_markup=get_main_keyboard()
@@ -131,8 +118,7 @@ async def check_subscription_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     username = callback.from_user.username
     full_name = callback.from_user.full_name
-    
-    # Создаем или обновляем пользователя в базе данных
+
     user_obj = await get_or_create_user(user_id, full_name, username)
     
     if not user_obj.is_authorized:
@@ -150,7 +136,7 @@ async def check_subscription_callback(callback: CallbackQuery):
             "✅ Спасибо за подписку! Теперь вы можете использовать бота.",
             show_alert=True
         )
-        # Получаем приветственное сообщение из базы данных
+
         welcome_text = await get_welcome_message()
         await callback.message.edit_text(
             welcome_text,

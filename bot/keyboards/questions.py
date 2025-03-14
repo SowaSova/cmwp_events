@@ -23,7 +23,6 @@ def get_back_to_experts_keyboard(from_expert_view: bool = False, expert_id: int 
             callback_data=f"expert_{expert_id}"
         )
     else:
-        # Иначе создаем кнопку для возврата к списку экспертов
         builder.button(
             text="🔙 Назад к экспертам",
             callback_data="experts" if from_expert_view else "ask_question_experts"
@@ -57,13 +56,12 @@ def get_skip_name_keyboard(from_expert_view: bool = False, expert_id: int = None
             callback_data=f"expert_{expert_id}"
         )
     else:
-        # Иначе создаем кнопку для возврата к списку экспертов
         builder.button(
             text="🔙 Назад к экспертам",
             callback_data="experts" if from_expert_view else "ask_question_experts"
         )
     
-    builder.adjust(1)  # Размещаем кнопки в одну колонку
+    builder.adjust(1)
     return builder.as_markup()
 
 
