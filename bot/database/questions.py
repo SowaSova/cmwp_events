@@ -1,15 +1,51 @@
 from sqlalchemy import select, insert
-from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
 from .base import async_session
-from .models import Question
+from .models import Question, AfterQuestionText
 from utils.logger import logger
 
 
-async def create_question(user_id: int, expert_id: int, text: str, user_name: str = None) -> Question:
+async def create_question(user_id: int, speaker_id: int, text: str, user_name: str = None) -> Question:
     """
-    Создает новый вопрос в базе данных.
+    Создает новый вопрос для спикера в базе данных.
+    
+    Args:
+        user_id: ID пользователя Telegram
+        speaker_id: ID спикера
+        text: Текст вопроса
+        user_name: Имя пользователя (опционально)
+        
+    Returns:
+        Question: Созданный вопрос
+    """
+    async with async_session() as session:
+        now = datetime.now()
+        
+        # Создаем новый вопрос
+        stmt = insert(Question).values(
+            user_id=user_id,
+            speaker_id=speaker_id,
+            expert_id=None,
+            text=text,
+            user_name=user_name,
+            is_answered=False,
+            created_at=now,
+            updated_at=now
+        ).returning(Question)
+        
+        result = await session.execute(stmt)
+        question = result.scalar_one()
+
+        await session.commit()
+        
+        logger.info(f"Создан новый вопрос (ID: {question.id}) от пользователя {user_id} для спикера {speaker_id}")
+        return question
+
+
+async def create_expert_question(user_id: int, expert_id: int, text: str, user_name: str = None) -> Question:
+    """
+    Создает новый вопрос для эксперта в базе данных.
     
     Args:
         user_id: ID пользователя Telegram
@@ -21,12 +57,12 @@ async def create_question(user_id: int, expert_id: int, text: str, user_name: st
         Question: Созданный вопрос
     """
     async with async_session() as session:
-        # Текущее время для полей created_at и updated_at
         now = datetime.now()
         
         # Создаем новый вопрос
         stmt = insert(Question).values(
             user_id=user_id,
+            speaker_id=None,
             expert_id=expert_id,
             text=text,
             user_name=user_name,
@@ -38,46 +74,23 @@ async def create_question(user_id: int, expert_id: int, text: str, user_name: st
         result = await session.execute(stmt)
         question = result.scalar_one()
         
-        # Сохраняем изменения
         await session.commit()
         
-        logger.info(f"Создан новый вопрос (ID: {question.id}) от пользователя {user_id} для эксперта {expert_id}")
+        logger.info(f"Создан новый вопрос для эксперта {expert_id} от пользователя {user_id}")
+        
         return question
 
 
-async def get_user_questions(user_id: int) -> list[Question]:
+async def get_after_question_text() -> str:
     """
-    Получает список вопросов пользователя.
-    
-    Args:
-        user_id: ID пользователя Telegram
-        
-    Returns:
-        list[Question]: Список вопросов пользователя
+    Получает текст, который показывается после ввода вопроса.
     """
     async with async_session() as session:
-        stmt = select(Question).where(Question.user_id == user_id).order_by(Question.created_at.desc())
-        result = await session.execute(stmt)
-        questions = result.scalars().all()
+        query = select(AfterQuestionText).order_by(AfterQuestionText.created_at.desc())
+        result = await session.execute(query)
+        after_question_text = result.scalar_one_or_none()
         
-        logger.info(f"Получено {len(questions)} вопросов пользователя {user_id}")
-        return questions
-
-
-async def get_expert_questions(expert_id: int) -> list[Question]:
-    """
-    Получает список вопросов для эксперта.
-    
-    Args:
-        expert_id: ID эксперта
+        if after_question_text:
+            return after_question_text.text
         
-    Returns:
-        list[Question]: Список вопросов для эксперта
-    """
-    async with async_session() as session:
-        stmt = select(Question).where(Question.expert_id == expert_id).order_by(Question.created_at.desc())
-        result = await session.execute(stmt)
-        questions = result.scalars().all()
-        
-        logger.info(f"Получено {len(questions)} вопросов для эксперта {expert_id}")
-        return questions 
+        return None 

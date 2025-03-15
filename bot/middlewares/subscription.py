@@ -58,12 +58,12 @@ class SubscriptionMiddleware(BaseMiddleware):
             # Если пользователь не подписан, отправляем сообщение с предложением подписаться
             if isinstance(event, Message):
                 await event.answer(
-                    "⚠️ Для продолжения работы с ботом необходимо подписаться на наш канал.",
+                    "⚠️ Для продолжения работы с ботом необходимо зайти в группу.",
                     reply_markup=get_subscription_keyboard()
                 )
             elif isinstance(event, CallbackQuery):
                 await event.message.answer(
-                    "⚠️ Для продолжения работы с ботом необходимо подписаться на наш канал.",
+                    "⚠️ Для продолжения работы с ботом необходимо зайти в группу.",
                     reply_markup=get_subscription_keyboard()
                 )
                 await event.answer()

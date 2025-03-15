@@ -1,31 +1,53 @@
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from config import CONTACT_SUPPORT_URL
+from config import CONTACT_SUPPORT_URL, CHANNEL_URL
 
 
 def get_main_keyboard() -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру для главного меню.
+    Создает главную клавиатуру с основными разделами.
     """
-
     builder = InlineKeyboardBuilder()
+    
+    builder.button(
+        text="👨‍🏫 Задать вопрос спикеру",
+        callback_data="speakers"
+    )
+    
+    builder.button(
+        text="🏢 CMWP",
+        callback_data="company"
+    )
 
-    builder.button(text="💬 Задать вопрос", callback_data="ask_question")
-    builder.button(text="👨‍🏫 Эксперты", callback_data="experts")
-    builder.button(text="📅 Расписание", callback_data="schedule")
-    builder.button(text="🆘 Поддержка", url=CONTACT_SUPPORT_URL)
+    builder.button(
+        text="📋 Расписание",
+        callback_data="schedule"
+    )
 
+    builder.button(
+        text="💬 Обсудить",
+        url=CHANNEL_URL
+    )
+
+    builder.button(
+        text="🆘 Поддержка",
+        url=CONTACT_SUPPORT_URL
+    )
+    
     builder.adjust(1)
-
+    
     return builder.as_markup()
 
 
 def get_back_keyboard() -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру с кнопкой "Назад".
+    Создает клавиатуру с кнопкой "Назад" в главное меню.
     """
     builder = InlineKeyboardBuilder()
     
-    builder.button(text="🔙 Назад", callback_data="start")
+    builder.button(
+        text="🔙 Назад",
+        callback_data="start"
+    )
     
     return builder.as_markup()

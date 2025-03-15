@@ -9,7 +9,7 @@ def get_subscription_keyboard() -> InlineKeyboardMarkup:
     """
     builder = InlineKeyboardBuilder()
     
-    builder.button(text="📢 Подписаться на канал", url=CHANNEL_URL)
+    builder.button(text="📢 Зайти в группу", url=CHANNEL_URL)
     builder.button(text="✅ Проверить подписку", callback_data="check_subscription")
 
     builder.adjust(1)

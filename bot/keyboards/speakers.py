@@ -2,28 +2,28 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from typing import List
 
-from database.models import Expert
+from database.models import Speaker
 
 
-def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: int) -> InlineKeyboardMarkup:
+def get_speakers_keyboard(speakers: List[Speaker], current_page: int, total_pages: int) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру со списком экспертов и пагинацией.
+    Создает клавиатуру со списком спикеров и пагинацией.
     
     Args:
-        experts: Список экспертов
+        speakers: Список спикеров
         current_page: Текущая страница
         total_pages: Общее количество страниц
         
     Returns:
-        InlineKeyboardMarkup: Клавиатура со списком экспертов и пагинацией
+        InlineKeyboardMarkup: Клавиатура со списком спикеров и пагинацией
     """
     builder = InlineKeyboardBuilder()
     
-    # Добавляем кнопки с экспертами
-    for expert in experts:
+    # Добавляем кнопки со спикерами
+    for speaker in speakers:
         builder.button(
-            text=expert.name,
-            callback_data=f"expert_{expert.id}"
+            text=speaker.name,
+            callback_data=f"speaker_{speaker.id}"
         )
     
     builder.adjust(1)  # Размещаем кнопки в одну колонку
@@ -36,7 +36,7 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
         if current_page > 1:
             navigation_buttons.append(InlineKeyboardButton(
                 text="◀️",
-                callback_data=f"experts_page_{current_page - 1}"
+                callback_data=f"speakers_page_{current_page - 1}"
             ))
         else:
             # Пустая кнопка, если на первой странице
@@ -48,14 +48,14 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
         # Кнопка "Поиск"
         navigation_buttons.append(InlineKeyboardButton(
             text="🔍 Поиск",
-            callback_data="search_experts"
+            callback_data="search_speakers"
         ))
         
         # Кнопка "Вперед" (если не на последней странице)
         if current_page < total_pages:
             navigation_buttons.append(InlineKeyboardButton(
                 text="▶️",
-                callback_data=f"experts_page_{current_page + 1}"
+                callback_data=f"speakers_page_{current_page + 1}"
             ))
         else:
             # Пустая кнопка, если на последней странице
@@ -70,57 +70,57 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
         # Если страница всего одна, добавляем только кнопку поиска
         builder.row(InlineKeyboardButton(
             text="🔍 Поиск",
-            callback_data="search_experts"
+            callback_data="search_speakers"
         ))
     
     # Добавляем кнопку "Назад" в главное меню
     builder.row(InlineKeyboardButton(
         text="🔙 Назад",
-        callback_data="company"
+        callback_data="start"
     ))
     
     return builder.as_markup()
 
 
-def get_expert_detail_keyboard() -> InlineKeyboardMarkup:
+def get_speaker_detail_keyboard() -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру для детальной информации об эксперте.
+    Создает клавиатуру для детальной информации о спикере.
     """
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад к списку экспертов",
-        callback_data="experts"
+        text="🔙 Назад к списку спикеров",
+        callback_data="speakers"
     )
     
     return builder.as_markup()
 
 
-def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int, total_experts: int) -> InlineKeyboardMarkup:
+def get_speaker_detail_with_slider_keyboard(speaker_id: int, current_position: int, total_speakers: int) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру для детальной информации об эксперте с кнопками навигации между экспертами.
+    Создает клавиатуру для детальной информации о спикере с кнопками навигации между спикерами.
     
     Args:
-        expert_id: ID текущего эксперта
-        current_position: Текущая позиция эксперта в списке
-        total_experts: Общее количество экспертов
+        speaker_id: ID текущего спикера
+        current_position: Текущая позиция спикера в списке
+        total_speakers: Общее количество спикеров
         
     Returns:
         InlineKeyboardMarkup: Клавиатура с кнопками навигации и действий
     """
     builder = InlineKeyboardBuilder()
     
-    # Добавляем слайдер для навигации между экспертами
+    # Добавляем слайдер для навигации между спикерами
     navigation_buttons = []
     
-    # Кнопка "Назад" (если не на первом эксперте)
+    # Кнопка "Назад" (если не на первом спикере)
     if current_position > 1:
         navigation_buttons.append(InlineKeyboardButton(
             text="⬅️",
-            callback_data=f"expert_nav_{current_position - 1}"
+            callback_data=f"speaker_nav_{current_position - 1}"
         ))
     else:
-        # Пустая кнопка, если на первом эксперте
+        # Пустая кнопка, если на первом спикере
         navigation_buttons.append(InlineKeyboardButton(
             text=" ",
             callback_data="empty"
@@ -128,18 +128,18 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
     
     # Кнопка с текущей позицией и общим количеством
     navigation_buttons.append(InlineKeyboardButton(
-        text=f"{current_position}/{total_experts}",
+        text=f"{current_position}/{total_speakers}",
         callback_data="empty"
     ))
     
-    # Кнопка "Вперед" (если не на последнем эксперте)
-    if current_position < total_experts:
+    # Кнопка "Вперед" (если не на последнем спикере)
+    if current_position < total_speakers:
         navigation_buttons.append(InlineKeyboardButton(
             text="➡️",
-            callback_data=f"expert_nav_{current_position + 1}"
+            callback_data=f"speaker_nav_{current_position + 1}"
         ))
     else:
-        # Пустая кнопка, если на последнем эксперте
+        # Пустая кнопка, если на последнем спикере
         navigation_buttons.append(InlineKeyboardButton(
             text=" ",
             callback_data="empty"
@@ -150,12 +150,12 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
 
     builder.button(
         text="✏️ Задать вопрос",
-        callback_data=f"ask_expert_{expert_id}"
+        callback_data=f"ask_speaker_{speaker_id}"
     )
 
     builder.button(
-        text="🔙 Назад к списку экспертов",
-        callback_data="experts"
+        text="🔙 Назад к списку спикеров",
+        callback_data="speakers"
     )
 
     builder.adjust(3, 1, 1)
@@ -163,39 +163,39 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
     return builder.as_markup()
 
 
-def get_expert_search_keyboard() -> InlineKeyboardMarkup:
+def get_search_keyboard() -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру для поиска экспертов.
+    Создает клавиатуру для поиска спикеров.
     """
     builder = InlineKeyboardBuilder()
 
     builder.button(
         text="❌ Отмена",
-        callback_data="experts"
+        callback_data="speakers"
     )
     
     return builder.as_markup()
 
 
-def get_expert_search_results_keyboard(experts: List[Expert]) -> InlineKeyboardMarkup:
+def get_search_results_keyboard(speakers: List[Speaker]) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру с результатами поиска экспертов.
+    Создает клавиатуру с результатами поиска спикеров.
     """
     builder = InlineKeyboardBuilder()
     
-    # Добавляем кнопки с экспертами
-    for expert in experts:
+    # Добавляем кнопки со спикерами
+    for speaker in speakers:
         builder.button(
-            text=expert.name,
-            callback_data=f"expert_{expert.id}"
+            text=speaker.name,
+            callback_data=f"speaker_{speaker.id}"
         )
 
     builder.adjust(1)
     
-    # Добавляем кнопку "Назад к списку экспертов"
+    # Добавляем кнопку "Назад к списку спикеров"
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад к списку экспертов",
-        callback_data="experts"
+        text="🔙 Назад к списку спикеров",
+        callback_data="speakers"
     ))
     
     return builder.as_markup() 

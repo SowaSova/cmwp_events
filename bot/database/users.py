@@ -94,6 +94,37 @@ async def update_user_real_name(user_id: int, real_name: str) -> TelegramUser:
         return user
 
 
+async def update_user_contacts(user_id: int, contacts: str) -> TelegramUser:
+    """
+    Обновляет контактную информацию пользователя.
+    
+    Args:
+        user_id: ID пользователя в Telegram
+        contacts: Контактная информация пользователя
+        
+    Returns:
+        TelegramUser: Обновленный объект пользователя
+    """
+    async with async_session() as session:
+        # Обновляем контактную информацию пользователя
+        stmt = update(TelegramUser).where(TelegramUser.telegram_id == user_id).values(
+            contacts=contacts,
+            updated_at=datetime.now()
+        ).returning(TelegramUser)
+        
+        result = await session.execute(stmt)
+        user = result.scalar_one_or_none()
+        
+        if user is None:
+            logger.warning(f"Попытка обновить контактную информацию несуществующего пользователя: {user_id}")
+            return None
+        
+        await session.commit()
+        logger.info(f"Обновлена контактная информация пользователя {user_id}: {contacts}")
+        
+        return user
+
+
 async def is_user_authorized(user_id: int) -> bool:
     """
     Проверяет, авторизован ли пользователь.

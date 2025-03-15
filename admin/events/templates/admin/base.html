@@ -1,0 +1,4 @@
+{% extends "admin/base.html" %} {% block extrahead %} {{ block.super }} {% for
+js_url in extra_js %}
+<script type="text/javascript" src="{{ js_url }}"></script>
+{% endfor %} {% endblock %}

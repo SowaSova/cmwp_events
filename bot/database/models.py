@@ -39,15 +39,35 @@ class TelegramUser(Base):
     full_name = Column(String(255), nullable=False)
     username = Column(String(255), nullable=True)
     real_name = Column(String(255), nullable=True)
+    contacts = Column(String(255), nullable=True)
     is_authorized = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Отношения
     questions = relationship("Question", back_populates="user", cascade="all, delete-orphan")
+    survey_responses = relationship("SurveyResponse", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self):
-        return f"<TelegramUser(telegram_id={self.telegram_id}, username={self.username})>"
+        return f"<TelegramUser(telegram_id={self.telegram_id}, full_name={self.full_name})>"
+
+
+class Speaker(Base):
+    """Модель спикера"""
+    __tablename__ = 'events_speaker'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    photo = Column(String(255), nullable=True)
+    description = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Отношения
+    questions = relationship("Question", back_populates="speaker", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<Speaker(id={self.id}, name={self.name})>"
 
 
 class Expert(Base):
@@ -74,7 +94,8 @@ class Question(Base):
     
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger, ForeignKey('events_telegramuser.telegram_id'), nullable=False)
-    expert_id = Column(Integer, ForeignKey('events_expert.id'), nullable=False)
+    speaker_id = Column(Integer, ForeignKey('events_speaker.id'), nullable=True)
+    expert_id = Column(Integer, ForeignKey('events_expert.id'), nullable=True)
     text = Column(Text, nullable=False)
     user_name = Column(String(255), nullable=True)
     is_answered = Column(Boolean, default=False)
@@ -83,7 +104,152 @@ class Question(Base):
     
     # Отношения
     user = relationship("TelegramUser", back_populates="questions")
+    speaker = relationship("Speaker", back_populates="questions")
     expert = relationship("Expert", back_populates="questions")
     
     def __repr__(self):
-        return f"<Question(id={self.id}, user_id={self.user_id}, expert_id={self.expert_id})>"
+        if self.speaker_id:
+            return f"<Question(id={self.id}, user_id={self.user_id}, speaker_id={self.speaker_id})>"
+        else:
+            return f"<Question(id={self.id}, user_id={self.user_id}, expert_id={self.expert_id})>"
+
+
+class CompanyInfo(Base):
+    """Модель информации о компании"""
+    __tablename__ = 'events_companyinfo'
+    
+    id = Column(Integer, primary_key=True)
+    description = Column(Text, nullable=False)
+    video = Column(String(255), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Отношения
+    links = relationship("CompanyLink", back_populates="company", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<CompanyInfo(id={self.id})>"
+
+
+class CompanyLink(Base):
+    """Модель ссылки компании"""
+    __tablename__ = 'events_companylink'
+    
+    id = Column(Integer, primary_key=True)
+    company_id = Column(Integer, ForeignKey('events_companyinfo.id'), nullable=False)
+    title = Column(String(255), nullable=False)
+    url = Column(String(255), nullable=False)
+    order = Column(Integer, default=0)
+    
+    # Отношения
+    company = relationship("CompanyInfo", back_populates="links")
+    
+    def __repr__(self):
+        return f"<CompanyLink(id={self.id}, title={self.title})>"
+
+
+class Survey(Base):
+    """Модель опроса"""
+    __tablename__ = 'events_survey'
+    
+    id = Column(Integer, primary_key=True)
+    description = Column(Text, nullable=False)
+    scheduled_time = Column(DateTime(timezone=True), nullable=False)
+    is_sent = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Отношения
+    questions = relationship("SurveyQuestion", back_populates="survey", cascade="all, delete-orphan")
+    responses = relationship("SurveyResponse", back_populates="survey", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<Survey(id={self.id})>"
+
+
+class SurveyQuestion(Base):
+    """Модель вопроса опроса"""
+    __tablename__ = 'events_surveyquestion'
+    
+    id = Column(Integer, primary_key=True)
+    survey_id = Column(Integer, ForeignKey('events_survey.id'), nullable=False)
+    text = Column(Text, nullable=False)
+    order = Column(Integer, default=0)
+    
+    # Отношения
+    survey = relationship("Survey", back_populates="questions")
+    options = relationship("SurveyOption", back_populates="question", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<SurveyQuestion(id={self.id}, text={self.text[:20]}...)>"
+
+
+class SurveyOption(Base):
+    """Модель варианта ответа на вопрос опроса"""
+    __tablename__ = 'events_surveyquestionoption'
+    
+    id = Column(Integer, primary_key=True)
+    question_id = Column(Integer, ForeignKey('events_surveyquestion.id'), nullable=False)
+    text = Column(String(255), nullable=False)
+    order = Column(Integer, default=0)
+    
+    # Отношения
+    question = relationship("SurveyQuestion", back_populates="options")
+    
+    def __repr__(self):
+        return f"<SurveyOption(id={self.id}, text={self.text})>"
+
+
+class SurveyResponse(Base):
+    """Модель ответа пользователя на опрос"""
+    __tablename__ = 'events_surveyresponse'
+    
+    id = Column(Integer, primary_key=True)
+    survey_id = Column(Integer, ForeignKey('events_survey.id'), nullable=False)
+    user_id = Column(BigInteger, ForeignKey('events_telegramuser.telegram_id'), nullable=False)
+    completed = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    
+    # Отношения
+    survey = relationship("Survey", back_populates="responses")
+    user = relationship("TelegramUser", back_populates="survey_responses")
+    option_responses = relationship("SurveyOptionResponse", back_populates="response", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<SurveyResponse(id={self.id}, survey_id={self.survey_id}, user_id={self.user_id})>"
+
+
+class SurveyOptionResponse(Base):
+    """Модель выбранного варианта ответа"""
+    __tablename__ = 'events_surveyoptionresponse'
+    
+    id = Column(Integer, primary_key=True)
+    response_id = Column(Integer, ForeignKey('events_surveyresponse.id'), nullable=False)
+    question_id = Column(Integer, ForeignKey('events_surveyquestion.id'), nullable=False)
+    selected_option_id = Column(Integer, ForeignKey('events_surveyquestionoption.id'), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Отношения
+    response = relationship("SurveyResponse", back_populates="option_responses")
+    question = relationship("SurveyQuestion")
+    selected_option = relationship(
+        "SurveyOption",
+        primaryjoin="SurveyOptionResponse.selected_option_id == SurveyOption.id"
+    )
+    
+    def __repr__(self):
+        return f"<SurveyOptionResponse(id={self.id}, question_id={self.question_id}, selected_option_id={self.selected_option_id})>"
+
+
+class AfterQuestionText(Base):
+    """Модель текста после вопроса"""
+    __tablename__ = 'events_afterquestiontext'
+    
+    id = Column(Integer, primary_key=True)
+    text = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    def __repr__(self):
+        return f"<AfterQuestionText(id={self.id})>"

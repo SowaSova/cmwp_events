@@ -1,5 +1,4 @@
 from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional, Tuple
 
 from .base import async_session
@@ -46,22 +45,11 @@ async def get_experts(page: int = 1, per_page: int = 10) -> Tuple[List[Expert], 
 async def get_expert_by_id(expert_id: int) -> Optional[Expert]:
     """
     Получает эксперта по ID.
-    
-    Args:
-        expert_id: ID эксперта
-        
-    Returns:
-        Optional[Expert]: Объект эксперта или None, если эксперт не найден
     """
     async with async_session() as session:
         query = select(Expert).where(Expert.id == expert_id)
         result = await session.execute(query)
         expert = result.scalar_one_or_none()
-        
-        if expert is not None:
-            logger.info(f"Получен эксперт: {expert.name} (ID: {expert.id})")
-        else:
-            logger.warning(f"Эксперт с ID {expert_id} не найден")
         
         return expert
 
@@ -69,12 +57,6 @@ async def get_expert_by_id(expert_id: int) -> Optional[Expert]:
 async def search_experts(search_query: str) -> List[Expert]:
     """
     Ищет экспертов по имени.
-    
-    Args:
-        search_query: Строка поиска
-        
-    Returns:
-        List[Expert]: Список найденных экспертов
     """
     async with async_session() as session:
         # Используем ILIKE для поиска без учета регистра
@@ -89,9 +71,6 @@ async def search_experts(search_query: str) -> List[Expert]:
 async def get_total_experts_count() -> int:
     """
     Получает общее количество экспертов в базе данных.
-    
-    Returns:
-        int: Общее количество экспертов
     """
     async with async_session() as session:
         count_query = select(func.count()).select_from(Expert)
@@ -103,12 +82,6 @@ async def get_total_experts_count() -> int:
 async def get_expert_position(expert_id: int) -> int:
     """
     Получает позицию эксперта в отсортированном списке всех экспертов.
-    
-    Args:
-        expert_id: ID эксперта
-        
-    Returns:
-        int: Позиция эксперта в списке (начиная с 1) или 0, если эксперт не найден
     """
     async with async_session() as session:
         # Получаем список всех ID экспертов, отсортированных по имени

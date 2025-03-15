@@ -5,3 +5,4 @@ sqlalchemy==2.0.19
 alembic==1.11.1
 pydantic>=2.4.1,<2.11
 loguru==0.7.0
+apscheduler==3.10.1

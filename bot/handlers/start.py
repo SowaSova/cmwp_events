@@ -40,7 +40,7 @@ async def start_command(message: Message, state: FSMContext):
     
     if not is_authorized and not user.is_authorized:
         await message.answer(
-            "⚠️ Для использования бота необходимо перейти по специальной ссылке."
+            "⚠️ Для использования бота необходимо зайти по специальной ссылке."
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
         return
@@ -49,7 +49,7 @@ async def start_command(message: Message, state: FSMContext):
 
     if not is_subscribed:
         await message.answer(
-            "⚠️ Для использования бота необходимо подписаться на канал.",
+            "⚠️ Для использования бота необходимо зайти в группу.",
             reply_markup=get_subscription_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
@@ -91,7 +91,7 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
 
     if not is_subscribed:
         await callback.message.edit_text(
-            "⚠️ Для использования бота необходимо подписаться на канал.",
+            "⚠️ Для использования бота необходимо зайти в группу.",
             reply_markup=get_subscription_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
@@ -133,7 +133,7 @@ async def check_subscription_callback(callback: CallbackQuery):
     
     if is_subscribed:
         await callback.answer(
-            "✅ Спасибо за подписку! Теперь вы можете использовать бота.",
+            "✅ Спасибо! Теперь вы можете использовать бота.",
             show_alert=True
         )
 
@@ -142,13 +142,13 @@ async def check_subscription_callback(callback: CallbackQuery):
             welcome_text,
             reply_markup=get_main_keyboard()
         )
-        logger.info(f"Пользователь {user_id} ({full_name}) подписался на канал")
+        logger.info(f"Пользователь {user_id} ({full_name}) зашел в группу")
     else:
         await callback.answer(
-            "❌ Вы не подписаны на канал. Пожалуйста, подпишитесь и нажмите кнопку проверки снова.",
+            "❌ Вы не зашли в группу. Пожалуйста, зайдите в группу и нажмите кнопку проверки снова.",
             show_alert=True
         )
-        logger.info(f"Пользователь {user_id} ({full_name}) не подписался на канал")
+        logger.info(f"Пользователь {user_id} ({full_name}) не зашел в группу")
     
     await callback.answer()
 

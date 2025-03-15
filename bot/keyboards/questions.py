@@ -2,99 +2,200 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
-def get_back_to_experts_keyboard(from_expert_view: bool = False, expert_id: int = None) -> InlineKeyboardMarkup:
+def get_back_to_speakers_keyboard(from_speaker_view: bool = False, speaker_id: int = None) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру с кнопкой "Назад к экспертам" или "Назад к эксперту".
+    Создает клавиатуру с кнопкой "Назад к списку спикеров" или "Назад к спикеру".
     
     Args:
-        from_expert_view: Если True, возвращает к просмотру экспертов, иначе к выбору экспертов для вопроса
-        expert_id: ID эксперта, к которому нужно вернуться (если пользователь пришел из просмотра эксперта)
-    
+        from_speaker_view: Флаг, указывающий, что пользователь пришел из просмотра спикера
+        speaker_id: ID спикера (если from_speaker_view=True)
+        
     Returns:
-        InlineKeyboardMarkup: Клавиатура с кнопкой "Назад к экспертам" или "Назад к эксперту"
+        InlineKeyboardMarkup: Клавиатура с кнопкой "Назад"
     """
     builder = InlineKeyboardBuilder()
     
-    if from_expert_view and expert_id:
-        # Если пользователь пришел из просмотра эксперта и известен ID эксперта,
-        # создаем кнопку для возврата к этому эксперту
+    if from_speaker_view and speaker_id:
+        # Если пользователь пришел из просмотра спикера, добавляем кнопку "Назад к спикеру"
         builder.button(
-            text="🔙 Назад к эксперту",
-            callback_data=f"expert_{expert_id}"
+            text="🔙 Назад к спикеру",
+            callback_data=f"speaker_{speaker_id}"
         )
     else:
+        # Иначе добавляем кнопку "Назад к списку спикеров"
         builder.button(
-            text="🔙 Назад к экспертам",
-            callback_data="experts" if from_expert_view else "ask_question_experts"
+            text="🔙 Назад к списку спикеров",
+            callback_data="speakers"
         )
     
     return builder.as_markup()
 
 
-def get_skip_name_keyboard(from_expert_view: bool = False, expert_id: int = None) -> InlineKeyboardMarkup:
+def get_back_to_experts_keyboard(from_expert_view: bool = False, expert_id: int = None) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру с кнопками "Пропустить" и "Назад к экспертам" или "Назад к эксперту".
+    Создает клавиатуру с кнопкой "Назад к списку экспертов" или "Назад к эксперту".
     
     Args:
-        from_expert_view: Если True, возвращает к просмотру экспертов, иначе к выбору экспертов для вопроса
-        expert_id: ID эксперта, к которому нужно вернуться (если пользователь пришел из просмотра эксперта)
-    
+        from_expert_view: Флаг, указывающий, что пользователь пришел из просмотра эксперта
+        expert_id: ID эксперта (если from_expert_view=True)
+        
     Returns:
-        InlineKeyboardMarkup: Клавиатура с кнопками "Пропустить" и "Назад к экспертам" или "Назад к эксперту"
+        InlineKeyboardMarkup: Клавиатура с кнопкой "Назад"
     """
     builder = InlineKeyboardBuilder()
+    
+    if from_expert_view and expert_id:
+        # Если пользователь пришел из просмотра эксперта, добавляем кнопку "Назад к эксперту"
+        builder.button(
+            text="🔙 Назад к эксперту",
+            callback_data=f"expert_{expert_id}"
+        )
+    else:
+        # Иначе добавляем кнопку "Назад к списку экспертов"
+        builder.button(
+            text="🔙 Назад к списку экспертов",
+            callback_data="experts"
+        )
+    
+    return builder.as_markup()
+
+
+def get_skip_name_keyboard(from_speaker_view: bool = False, recipient_id: int = None, is_expert: bool = False) -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру с кнопкой "Пропустить" для ввода ФИО.
+    
+    Args:
+        from_speaker_view: Флаг, указывающий, что пользователь пришел из просмотра спикера/эксперта
+        recipient_id: ID спикера/эксперта
+        is_expert: Флаг, указывающий, что recipient_id относится к эксперту
+        
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопками "Пропустить" и "Отмена"
+    """
+    builder = InlineKeyboardBuilder()
+    
     builder.button(
-        text="Пропустить ➡️",
+        text="⏭ Пропустить",
         callback_data="skip_name"
     )
     
-    if from_expert_view and expert_id:
-        # Если пользователь пришел из просмотра эксперта и известен ID эксперта,
-        # создаем кнопку для возврата к этому эксперту
-        builder.button(
-            text="🔙 Назад к эксперту",
-            callback_data=f"expert_{expert_id}"
-        )
+    if is_expert:
+        if from_speaker_view and recipient_id:
+            builder.button(
+                text="❌ Отмена",
+                callback_data=f"expert_{recipient_id}"
+            )
+        else:
+            builder.button(
+                text="❌ Отмена",
+                callback_data="experts"
+            )
     else:
-        builder.button(
-            text="🔙 Назад к экспертам",
-            callback_data="experts" if from_expert_view else "ask_question_experts"
-        )
+        if from_speaker_view and recipient_id:
+            builder.button(
+                text="❌ Отмена",
+                callback_data=f"speaker_{recipient_id}"
+            )
+        else:
+            builder.button(
+                text="❌ Отмена",
+                callback_data="speakers"
+            )
     
     builder.adjust(1)
+    
     return builder.as_markup()
 
 
-def get_confirm_question_keyboard(from_expert_view: bool = False, expert_id: int = None) -> InlineKeyboardMarkup:
+def get_skip_contacts_keyboard(from_speaker_view: bool = False, recipient_id: int = None, is_expert: bool = False) -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру с кнопками "Готово" и "Назад к экспертам" или "Назад к эксперту".
+    Создает клавиатуру с кнопкой "Пропустить" для ввода контактной информации.
     
     Args:
-        from_expert_view: Если True, возвращает к просмотру экспертов, иначе к выбору экспертов для вопроса
-        expert_id: ID эксперта, к которому нужно вернуться (если пользователь пришел из просмотра эксперта)
-    
+        from_speaker_view: Флаг, указывающий, что пользователь пришел из просмотра спикера/эксперта
+        recipient_id: ID спикера/эксперта
+        is_expert: Флаг, указывающий, что recipient_id относится к эксперту
+        
     Returns:
-        InlineKeyboardMarkup: Клавиатура с кнопками "Готово" и "Назад к экспертам" или "Назад к эксперту"
+        InlineKeyboardMarkup: Клавиатура с кнопками "Пропустить" и "Отмена"
     """
     builder = InlineKeyboardBuilder()
+    
     builder.button(
-        text="✅ Готово",
+        text="⏭ Пропустить",
+        callback_data="skip_contacts"
+    )
+    
+    if is_expert:
+        if from_speaker_view and recipient_id:
+            builder.button(
+                text="❌ Отмена",
+                callback_data=f"expert_{recipient_id}"
+            )
+        else:
+            builder.button(
+                text="❌ Отмена",
+                callback_data="experts"
+            )
+    else:
+        if from_speaker_view and recipient_id:
+            builder.button(
+                text="❌ Отмена",
+                callback_data=f"speaker_{recipient_id}"
+            )
+        else:
+            builder.button(
+                text="❌ Отмена",
+                callback_data="speakers"
+            )
+    
+    builder.adjust(1)
+    
+    return builder.as_markup()
+
+
+def get_confirm_question_keyboard(from_speaker_view: bool = False, recipient_id: int = None, is_expert: bool = False) -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру для подтверждения вопроса.
+    
+    Args:
+        from_speaker_view: Флаг, указывающий, что пользователь пришел из просмотра спикера/эксперта
+        recipient_id: ID спикера/эксперта
+        is_expert: Флаг, указывающий, что recipient_id относится к эксперту
+        
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопками "Отправить" и "Отмена"
+    """
+    builder = InlineKeyboardBuilder()
+    
+    builder.button(
+        text="✅ Отправить",
         callback_data="confirm_question"
     )
     
-    if from_expert_view and expert_id:
-        # Если пользователь пришел из просмотра эксперта и известен ID эксперта,
-        # создаем кнопку для возврата к этому эксперту
-        builder.button(
-            text="🔙 Назад к эксперту",
-            callback_data=f"expert_{expert_id}"
-        )
+    if is_expert:
+        if from_speaker_view and recipient_id:
+            builder.button(
+                text="❌ Отмена",
+                callback_data=f"expert_{recipient_id}"
+            )
+        else:
+            builder.button(
+                text="❌ Отмена",
+                callback_data="experts"
+            )
     else:
-        # Иначе создаем кнопку для возврата к списку экспертов
-        builder.button(
-            text="🔙 Назад к экспертам",
-            callback_data="experts" if from_expert_view else "ask_question_experts"
-        )
+        if from_speaker_view and recipient_id:
+            builder.button(
+                text="❌ Отмена",
+                callback_data=f"speaker_{recipient_id}"
+            )
+        else:
+            builder.button(
+                text="❌ Отмена",
+                callback_data="speakers"
+            )
     
-    builder.adjust(1)  # Размещаем кнопки в одну колонку
+    builder.adjust(1)
+    
     return builder.as_markup() 

@@ -6,7 +6,7 @@ import os
 
 from utils.logger import logger
 from database import get_experts, get_expert_by_id, search_experts, get_total_experts_count, get_expert_position
-from keyboards import get_experts_keyboard, get_expert_detail_keyboard, get_search_keyboard, get_search_results_keyboard, get_expert_detail_with_slider_keyboard, get_back_keyboard
+from keyboards import get_experts_keyboard, get_expert_detail_keyboard, get_expert_search_keyboard, get_expert_search_results_keyboard, get_expert_detail_with_slider_keyboard, get_back_keyboard
 from config import MEDIA_ROOT
 from handlers.states import ExpertSearch
 
@@ -56,7 +56,7 @@ async def show_experts(callback: CallbackQuery):
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="👨‍🏫 Эксперты\n\nВыберите эксперта, чтобы узнать подробную информацию:",
+                text="👨‍🔬 Эксперты\n\nВыберите эксперта, чтобы узнать подробную информацию:",
                 reply_markup=get_experts_keyboard(experts, current_page, total_pages)
             )
         except Exception as e:
@@ -64,7 +64,7 @@ async def show_experts(callback: CallbackQuery):
     else:
         # Если нет фото, редактируем текст
         await callback.message.edit_text(
-            "👨‍🏫 Эксперты\n\nВыберите эксперта, чтобы узнать подробную информацию:",
+            "👨‍🔬 Эксперты\n\nВыберите эксперта, чтобы узнать подробную информацию:",
             reply_markup=get_experts_keyboard(experts, current_page, total_pages)
         )
     
@@ -80,11 +80,9 @@ async def show_experts_page(callback: CallbackQuery):
     """
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
-    
-    # Извлекаем номер страницы из callback_data
+
     page = int(callback.data.split("_")[-1])
-    
-    # Получаем список экспертов для указанной страницы
+
     experts, current_page, total_pages = await get_experts(page=page, per_page=10)
 
     if not experts:
@@ -96,7 +94,7 @@ async def show_experts_page(callback: CallbackQuery):
         return
 
     await callback.message.edit_text(
-        "👨‍🏫 Список экспертов\n\nВыберите эксперта для просмотра подробной информации:",
+        "👨‍🔬 Список экспертов\n\nВыберите эксперта для просмотра подробной информации:",
         reply_markup=get_experts_keyboard(experts, current_page, total_pages)
     )
     
@@ -130,11 +128,9 @@ async def show_expert_detail(callback: CallbackQuery, state: FSMContext):
         else:
             await callback.answer("Эксперт не найден")
             return
-    
-    # Извлекаем ID эксперта из callback_data
+
     expert_id = int(callback.data.split("_")[-1])
-    
-    # Вызываем функцию для отображения информации об эксперте
+
     await show_expert_by_id(callback, expert_id, user_id, full_name, state)
 
 
@@ -168,7 +164,7 @@ async def show_expert_by_id(callback: CallbackQuery, expert_id: int, user_id: in
     position = await get_expert_position(expert_id)
     total_experts = await get_total_experts_count()
 
-    text = f"👨‍🏫 {expert.name}\n\n{expert.description}"
+    text = f"👨‍🔬 {expert.name}\n\n{expert.description}"
 
     await callback.message.delete()
     
@@ -178,7 +174,6 @@ async def show_expert_by_id(callback: CallbackQuery, expert_id: int, user_id: in
         
         # Проверяем существование файла
         if os.path.exists(image_path):
-            # Отправляем фото с текстом и клавиатурой
             photo = FSInputFile(image_path)
             await callback.bot.send_photo(
                 chat_id=callback.message.chat.id,
@@ -218,7 +213,7 @@ async def start_expert_search(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         "🔍 Поиск экспертов\n\nВведите ФИО или часть ФИО эксперта для поиска:",
-        reply_markup=get_search_keyboard()
+        reply_markup=get_expert_search_keyboard()
     )
     
     logger.info(f"Пользователь {user_id} ({full_name}) начал поиск экспертов")
@@ -237,7 +232,7 @@ async def process_expert_search(message: Message, state: FSMContext):
     if len(search_query) < 3:
         await message.answer(
             "⚠️ Запрос слишком короткий. Пожалуйста, введите не менее 3 символов.",
-            reply_markup=get_search_keyboard()
+            reply_markup=get_expert_search_keyboard()
         )
         return
     
@@ -246,24 +241,15 @@ async def process_expert_search(message: Message, state: FSMContext):
     if not experts:
         await message.answer(
             f"🔍 По запросу «{search_query}» ничего не найдено.\n\nПопробуйте изменить запрос.",
-            reply_markup=get_search_keyboard()
+            reply_markup=get_expert_search_keyboard()
         )
-        logger.info(f"Пользователь {user_id} ({full_name}) не нашел экспертов по запросу '{search_query}'")
+        logger.info(f"Пользователь {user_id} ({full_name}) выполнил поиск по запросу '{search_query}', но ничего не найдено")
         return
-
+    
     await message.answer(
         f"🔍 Результаты поиска по запросу «{search_query}»:\n\nНайдено экспертов: {len(experts)}",
-        reply_markup=get_search_results_keyboard(experts)
+        reply_markup=get_expert_search_results_keyboard(experts)
     )
-
-    await state.clear()
     
-    logger.info(f"Пользователь {user_id} ({full_name}) нашел {len(experts)} экспертов по запросу '{search_query}'")
-
-
-@experts_router.callback_query(F.data == "empty")
-async def empty_callback(callback: CallbackQuery):
-    """
-    Обрабатывает пустой callback-запрос.
-    """
-    await callback.answer() 
+    logger.info(f"Пользователь {user_id} ({full_name}) выполнил поиск по запросу '{search_query}', найдено {len(experts)} экспертов")
+    await state.clear() 
