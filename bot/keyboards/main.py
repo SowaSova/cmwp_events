@@ -51,3 +51,18 @@ def get_back_keyboard() -> InlineKeyboardMarkup:
     )
     
     return builder.as_markup()
+
+
+def get_home_keyboard() -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру с кнопкой "На главную"
+    """
+    builder = InlineKeyboardBuilder()
+    
+    builder.button(
+        text="🏠 На главную",
+        callback_data="start"
+    )
+    
+    return builder.as_markup()
+    

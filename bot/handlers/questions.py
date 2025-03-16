@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from utils.logger import logger
 from database import get_speaker_by_id, get_expert_by_id, get_or_create_user, create_question, create_expert_question, update_user_real_name, update_user_contacts, get_after_question_text
-from keyboards import get_back_to_speakers_keyboard, get_back_to_experts_keyboard,get_skip_name_keyboard
+from keyboards import get_back_to_speakers_keyboard, get_back_to_experts_keyboard,get_skip_name_keyboard, get_home_keyboard
 from handlers.states import AskQuestionStates
 
 questions_router = Router()
@@ -167,7 +167,7 @@ async def process_question_text(message: Message, state: FSMContext):
             
             await message.answer(
                 after_question_text,
-                reply_markup=back_keyboard
+                reply_markup=get_home_keyboard()
             )
             
             logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id}) и получил текст после вопроса")
@@ -176,7 +176,7 @@ async def process_question_text(message: Message, state: FSMContext):
             
             await message.answer(
                 f"✅ Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
-                reply_markup=back_keyboard
+                reply_markup=get_home_keyboard()
             )
             
             logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
@@ -229,7 +229,7 @@ async def process_user_name(message: Message, state: FSMContext):
         
         await message.answer(
             after_question_text,
-            reply_markup=back_keyboard
+            reply_markup=get_home_keyboard()
         )
         
         logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id}) и получил текст после вопроса")
@@ -239,7 +239,7 @@ async def process_user_name(message: Message, state: FSMContext):
         
         await message.answer(
             f"✅ Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
-            reply_markup=back_keyboard
+            reply_markup=get_home_keyboard()
         )
         
         logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
@@ -283,7 +283,7 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
         
         await callback.message.edit_text(
             after_question_text,
-            reply_markup=back_keyboard
+            reply_markup=get_home_keyboard()
         )
         
         logger.info(f"Пользователь {user_id} ({full_name}) пропустил ввод ФИО, отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id}) и получил текст после вопроса")
@@ -293,7 +293,7 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
         
         await callback.message.edit_text(
             f"✅ Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
-            reply_markup=back_keyboard
+            reply_markup=get_home_keyboard()
         )
         
         logger.info(f"Пользователь {user_id} ({full_name}) пропустил ввод ФИО и отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
@@ -329,7 +329,7 @@ async def process_user_contacts(message: Message, state: FSMContext):
     
     await message.answer(
         "✅ Спасибо! Ваша контактная информация сохранена.",
-        reply_markup=back_keyboard
+        reply_markup=get_home_keyboard()
     )
     
     logger.info(f"Пользователь {user_id} ({full_name}) указал контактную информацию: {contacts}")
