@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from typing import List
 
@@ -37,12 +37,6 @@ def get_company_keyboard() -> InlineKeyboardMarkup:
 def get_company_info_keyboard(links: List[CompanyLink] = None) -> InlineKeyboardMarkup:
     """
     Создает клавиатуру для информации о компании.
-    
-    Args:
-        links: Список ссылок компании
-        
-    Returns:
-        InlineKeyboardMarkup: Клавиатура со ссылками компании и кнопкой "Назад"
     """
     builder = InlineKeyboardBuilder()
     

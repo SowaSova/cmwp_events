@@ -3,8 +3,8 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 
 from utils.logger import logger
-from database import get_speaker_by_id, get_expert_by_id, get_or_create_user, create_question, create_expert_question, update_user_real_name, update_user_contacts, get_after_question_text
-from keyboards import get_back_to_speakers_keyboard, get_back_to_experts_keyboard,get_skip_name_keyboard, get_home_keyboard
+from database import get_speaker_by_id, get_expert_by_id, get_or_create_user, create_question, create_expert_question, update_user_real_name, update_user_contacts, get_after_question_text, get_topic_by_id, get_speakers_by_topic, get_topics_by_session, get_session_by_id, get_topics_by_session, get_sessions
+from keyboards import get_skip_name_keyboard, get_home_keyboard, get_cancel_keyboard, get_schedule_keyboard, get_back_to_speakers_keyboard, get_back_to_experts_keyboard, get_topics_keyboard, get_schedule_speakers_keyboard, get_sessions_keyboard
 from handlers.states import AskQuestionStates
 
 questions_router = Router()
@@ -353,4 +353,119 @@ async def back_from_contacts(callback: CallbackQuery, state: FSMContext):
     
     logger.info(f"Пользователь {user_id} ({full_name}) не стал вводить контактную информацию и вернулся назад")
 
-    await callback.answer() 
+    await callback.answer()
+
+
+@questions_router.callback_query(F.data.startswith("ask_question:"))
+async def ask_question(callback: CallbackQuery, state: FSMContext):
+    """
+    Обрабатывает callback-запрос ask_question:{speaker_id}.
+    Запускает процесс задания вопроса спикеру.
+    """
+    user_id = callback.from_user.id
+    full_name = callback.from_user.full_name
+
+    parts = callback.data.split(":")
+    speaker_id = int(parts[1])
+    topic_id = int(parts[2]) if len(parts) > 2 else None
+    session_id = int(parts[3]) if len(parts) > 3 else None
+
+    # Получаем данные о сообщениях со спикерами из состояния
+    data = await state.get_data()
+    speaker_message_ids = data.get("speaker_message_ids", [])
+
+    # Удаляем все сообщения со спикерами
+    for message_id in speaker_message_ids:
+        try:
+            await callback.bot.delete_message(
+                chat_id=callback.message.chat.id,
+                message_id=message_id
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при удалении сообщения {message_id}: {e}")
+    
+    # Получаем спикера
+    speaker = await get_speaker_by_id(speaker_id)
+    
+    # Если спикер не найден
+    if speaker is None:
+        await callback.message.edit_text(
+            "❌ Спикер не найден.\n\nПожалуйста, попробуйте позже.",
+            reply_markup=get_home_keyboard()
+        )
+        logger.warning(f"Пользователь {user_id} ({full_name}) попытался задать вопрос спикеру с ID {speaker_id}, но он не найден")
+        await callback.answer()
+        return
+
+    await state.update_data(speaker_id=speaker_id, topic_id=topic_id, session_id=session_id)
+
+    await state.set_state(AskQuestionStates.waiting_for_question)
+    
+    try:
+        await callback.message.edit_text(
+            f"📝 Задайте ваш вопрос для спикера <b>{speaker.name}</b>:",
+            reply_markup=get_cancel_keyboard(),
+            parse_mode="HTML"
+        )
+    except Exception as e:
+        await callback.message.answer(
+            f"📝 Задайте ваш вопрос для спикера <b>{speaker.name}</b>:",
+            reply_markup=get_cancel_keyboard(),
+            parse_mode="HTML"
+        )
+    
+    logger.info(f"Пользователь {user_id} ({full_name}) начал задавать вопрос спикеру {speaker.name} (ID: {speaker_id})")
+    await callback.answer()
+
+
+@questions_router.callback_query(F.data == "cancel_question")
+async def cancel_question(callback: CallbackQuery, state: FSMContext):
+    """
+    Обрабатывает нажатие на кнопку "Отмена" в процессе задания вопроса.
+    Отменяет процесс задания вопроса и возвращает пользователя к списку тем.
+    """
+    user_id = callback.from_user.id
+    full_name = callback.from_user.full_name
+
+    data = await state.get_data()
+    topic_id = data.get("topic_id")
+    session_id = data.get("session_id")
+
+    await state.clear()
+
+    if not all([topic_id, session_id]):
+        await callback.message.edit_text(
+            "❌ Ошибка при возврате к темам.\n\nПожалуйста, попробуйте позже.",
+            reply_markup=get_sessions_keyboard(await get_sessions())
+        )
+        logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к темам, но данные не найдены")
+        await callback.answer()
+        return
+
+    # Получаем темы для сессии
+    topics = await get_topics_by_session(session_id)
+    session = await get_session_by_id(session_id)
+    
+    if not session:
+        await callback.message.edit_text(
+            "❌ Ошибка при возврате к темам.\n\nПожалуйста, попробуйте позже.",
+            reply_markup=get_sessions_keyboard(await get_sessions())
+        )
+        logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к темам, но сессия не найдена")
+        await callback.answer()
+        return
+    
+    text = f"<b>📋 {session.title}</b>\n\n"
+    text += "<b>Темы в этой сессии:</b>\n"
+    for topic in topics:
+        text += f"• <b>{topic.title}</b> - {topic.description}\n"
+    
+    # Отправляем сообщение со списком тем
+    await callback.message.edit_text(
+        text,
+        reply_markup=get_topics_keyboard(topics, session_id),
+        parse_mode="HTML"
+    )
+
+    logger.info(f"Пользователь {user_id} ({full_name}) отменил отправку вопроса и вернулся к списку тем")
+    await callback.answer()

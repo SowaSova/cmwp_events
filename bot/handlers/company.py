@@ -77,31 +77,50 @@ async def show_company_info(callback: CallbackQuery):
 
     links = await get_company_links()
 
-    text = f"🏢 О компании\n\n{company_info.description}"
+    text = f"{company_info.description}"
 
     await callback.message.delete()
     
-    # Если у компании есть видео, отправляем его вместе с текстом
-    if company_info.video:
-        video_path = os.path.join(MEDIA_ROOT, company_info.video)
+    # Если у компании есть медиа, отправляем его вместе с текстом
+    if company_info.media:
+        media_path = os.path.join(MEDIA_ROOT, company_info.media)
         
         # Проверяем существование файла
-        if os.path.exists(video_path):
-            video = FSInputFile(video_path)
-            await callback.bot.send_video(
-                chat_id=callback.message.chat.id,
-                video=video,
-                caption=text,
-                reply_markup=get_company_info_keyboard(links),
-            )
+        if os.path.exists(media_path):
+            if company_info.media_type == 'photo':
+                # Отправляем фото
+                photo = FSInputFile(media_path)
+                await callback.bot.send_photo(
+                    chat_id=callback.message.chat.id,
+                    photo=photo,
+                    caption=text,
+                    reply_markup=get_company_info_keyboard(links),
+                )
+            elif company_info.media_type == 'video':
+                # Отправляем видео
+                video = FSInputFile(media_path)
+                await callback.bot.send_video(
+                    chat_id=callback.message.chat.id,
+                    video=video,
+                    caption=text,
+                    reply_markup=get_company_info_keyboard(links),
+                )
+            else:
+                # Если тип медиа неизвестен, отправляем только текст
+                logger.warning(f"Неизвестный тип медиа: {company_info.media_type}")
+                await callback.bot.send_message(
+                    chat_id=callback.message.chat.id,
+                    text=text,
+                    reply_markup=get_company_info_keyboard(links),
+                )
         else:
-            logger.warning(f"Файл видео не найден: {video_path}")
+            logger.warning(f"Файл медиа не найден: {media_path}")
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
                 text=text,
                 reply_markup=get_company_info_keyboard(links),
             )
-    # Если у компании нет видео, отправляем только текст
+    # Если у компании нет медиа, отправляем только текст
     else:
         await callback.bot.send_message(
             chat_id=callback.message.chat.id,

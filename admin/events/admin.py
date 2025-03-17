@@ -6,8 +6,9 @@ from django.contrib.admin.widgets import AdminTextareaWidget
 from django import forms
 from django.db.models import Q
 from .models import (
-    WelcomeMessage, TelegramUser, Speaker, Expert, Question, Schedule, CompanyInfo, CompanyLink, 
-    Survey, SurveyQuestion, SurveyQuestionOption, SurveyResponse, SurveyOptionResponse, AfterQuestionText
+    WelcomeMessage, TelegramUser, Speaker, Expert, Question, CompanyInfo, CompanyLink, 
+    Survey, SurveyQuestion, SurveyQuestionOption, SurveyResponse, SurveyOptionResponse, AfterQuestionText,
+    EventInfo, Session, Topic
 )
 
 
@@ -40,30 +41,6 @@ class WelcomeMessageAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Разрешаем создание только если нет ни одного сообщения
         return not WelcomeMessage.objects.exists()
-
-    def has_delete_permission(self, request, obj=None):
-        # Запрещаем удаление
-        return False
-
-
-@admin.register(Schedule)
-class ScheduleAdmin(admin.ModelAdmin):
-    """Админка для расписания"""
-    list_display = ('__str__', 'created_at', 'updated_at')
-    readonly_fields = ('created_at', 'updated_at')
-    fieldsets = (
-        (None, {
-            'fields': ('text',)
-        }),
-        ('Информация', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )
-
-    def has_add_permission(self, request):
-        # Разрешаем создание только если нет ни одного расписания
-        return not Schedule.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         # Запрещаем удаление
@@ -117,15 +94,15 @@ class QuestionInline(admin.TabularInline):
 
 @admin.register(Speaker)
 class SpeakerAdmin(admin.ModelAdmin):
-    """Админка для спикеров"""
-    list_display = ('name', 'display_photo', 'unanswered_questions_count', 'view_questions', 'created_at')
+    """Админка спикеров"""
+    list_display = ('name', 'display_photo', 'is_moderator', 'unanswered_questions_count', 'view_questions', 'created_at')
     search_fields = ('name',)
+    list_filter = ('is_moderator',)
     readonly_fields = ('created_at', 'updated_at', 'display_photo_large')
-    list_filter = ('created_at',)
     inlines = [QuestionInline]
     fieldsets = (
         (None, {
-            'fields': ('name', 'photo', 'display_photo_large', 'description')
+            'fields': ('name', 'photo', 'display_photo_large', 'description', 'is_moderator')
         }),
         ('Информация', {
             'fields': ('created_at', 'updated_at'),
@@ -164,6 +141,18 @@ class SpeakerAdmin(admin.ModelAdmin):
         )
         return format_html('<a href="{}">Все вопросы ({})</a>', url, count)
     view_questions.short_description = "Вопросы"
+    
+    def unanswered_questions_count(self, obj):
+        """Возвращает количество неотвеченных вопросов"""
+        return obj.questions.filter(is_answered=False).count()
+    unanswered_questions_count.short_description = "Неотвеченные вопросы"
+    
+    def save_model(self, request, obj, form, change):
+        """Проверяем, что модератор только один"""
+        if obj.is_moderator:
+            # Если устанавливаем модератора, снимаем флаг у всех остальных
+            Speaker.objects.exclude(pk=obj.pk).filter(is_moderator=True).update(is_moderator=False)
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Expert)
@@ -353,11 +342,12 @@ class CompanyLinkInline(admin.TabularInline):
 class CompanyInfoAdmin(admin.ModelAdmin):
     """Админка для информации о компании"""
     list_display = ('__str__', 'created_at', 'updated_at')
-    readonly_fields = ('created_at', 'updated_at', 'display_video')
+    readonly_fields = ('created_at', 'updated_at', 'display_media')
     inlines = [CompanyLinkInline]
     fieldsets = (
         (None, {
-            'fields': ('description', 'video', 'display_video')
+            'fields': ('description', 'media', 'media_type', 'display_media'),
+            'description': 'Загрузите медиа файл и выберите его тип (фото или видео)'
         }),
         ('Информация', {
             'fields': ('created_at', 'updated_at'),
@@ -365,19 +355,60 @@ class CompanyInfoAdmin(admin.ModelAdmin):
         }),
     )
 
-    def display_video(self, obj):
-        """Отображение видео в форме редактирования"""
-        if obj.video:
-            return format_html(
-                '<video width="320" height="240" controls><source src="{}" type="video/mp4">Ваш браузер не поддерживает видео.</video>',
-                obj.video.url
-            )
+    def display_media(self, obj):
+        """Отображение медиа в форме редактирования"""
+        if obj.media:
+            if obj.media_type == 'photo':
+                return format_html('<img src="{}" width="200" style="max-height: 300px; object-fit: contain;" />', obj.media.url)
+            elif obj.media_type == 'video':
+                return format_html(
+                    '<video width="320" height="240" controls><source src="{}" type="video/mp4">Ваш браузер не поддерживает видео.</video>',
+                    obj.media.url
+                )
         return "-"
-    display_video.short_description = "Предпросмотр видео"
+    display_media.short_description = "Предпросмотр"
 
     def has_add_permission(self, request):
         # Разрешаем создание только если нет ни одной записи
         return not CompanyInfo.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        # Запрещаем удаление
+        return False
+
+
+@admin.register(EventInfo)
+class EventInfoAdmin(admin.ModelAdmin):
+    """Админка для информации о мероприятии"""
+    list_display = ('__str__', 'created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'display_media')
+    fieldsets = (
+        (None, {
+            'fields': ('description', 'media', 'media_type', 'display_media'),
+            'description': 'Загрузите медиа файл и выберите его тип (фото или видео)'
+        }),
+        ('Информация', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def display_media(self, obj):
+        """Отображение медиа в форме редактирования"""
+        if obj.media:
+            if obj.media_type == 'photo':
+                return format_html('<img src="{}" width="200" style="max-height: 300px; object-fit: contain;" />', obj.media.url)
+            elif obj.media_type == 'video':
+                return format_html(
+                    '<video width="320" height="240" controls><source src="{}" type="video/mp4">Ваш браузер не поддерживает видео.</video>',
+                    obj.media.url
+                )
+        return "-"
+    display_media.short_description = "Предпросмотр"
+
+    def has_add_permission(self, request):
+        # Разрешаем создание только если нет ни одной записи
+        return not EventInfo.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         # Запрещаем удаление
@@ -729,3 +760,36 @@ class AfterQuestionTextAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Запрещаем удаление
         return False
+
+
+@admin.register(Session)
+class SessionAdmin(admin.ModelAdmin):
+    """Админка сессий"""
+    list_display = ('title', 'order', 'created_at')
+    search_fields = ('title', 'description')
+    list_editable = ('order',)
+
+
+class TopicInline(admin.TabularInline):
+    """Инлайн для тем в сессии"""
+    model = Topic
+    extra = 1
+    fields = ('title', 'order')
+
+
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    """Админка тем"""
+    list_display = ('title', 'session', 'order', 'created_at')
+    search_fields = ('title', 'description')
+    list_filter = ('session',)
+    list_editable = ('order',)
+    filter_horizontal = ('speakers',)
+    fieldsets = (
+        (None, {
+            'fields': ('session', 'title', 'description', 'order')
+        }),
+        ('Спикеры', {
+            'fields': ('speakers',)
+        }),
+    )

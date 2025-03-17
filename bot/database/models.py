@@ -1,9 +1,16 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, BigInteger
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, BigInteger, Table
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from .base import Base
 
+# Определение промежуточной таблицы для связи many-to-many между Topic и Speaker
+events_topic_speakers = Table(
+    'events_topic_speakers',
+    Base.metadata,
+    Column('topic_id', Integer, ForeignKey('events_topic.id'), primary_key=True),
+    Column('speaker_id', Integer, ForeignKey('events_speaker.id'), primary_key=True)
+)
 
 class WelcomeMessage(Base):
     """Модель приветственного сообщения"""
@@ -60,6 +67,7 @@ class Speaker(Base):
     name = Column(String(255), nullable=False)
     photo = Column(String(255), nullable=True)
     description = Column(Text, nullable=False)
+    is_moderator = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -120,7 +128,8 @@ class CompanyInfo(Base):
     
     id = Column(Integer, primary_key=True)
     description = Column(Text, nullable=False)
-    video = Column(String(255), nullable=True)
+    media = Column(String(255), nullable=True)
+    media_type = Column(String(10), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -253,3 +262,60 @@ class AfterQuestionText(Base):
     
     def __repr__(self):
         return f"<AfterQuestionText(id={self.id})>"
+
+
+class EventInfo(Base):
+    """Модель информации о мероприятии"""
+    __tablename__ = 'events_eventinfo'
+    
+    id = Column(Integer, primary_key=True)
+    description = Column(Text, nullable=False)
+    media = Column(String(255), nullable=True)
+    media_type = Column(String(10), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    def __repr__(self):
+        return f"<EventInfo(id={self.id})>"
+
+
+class Session(Base):
+    """Модель сессии мероприятия"""
+    __tablename__ = 'events_session'
+    
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
+    order = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Отношения
+    topics = relationship("Topic", back_populates="session", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<Session(id={self.id}, title={self.title})>"
+
+
+class Topic(Base):
+    """Модель темы в рамках сессии"""
+    __tablename__ = 'events_topic'
+    
+    id = Column(Integer, primary_key=True)
+    session_id = Column(Integer, ForeignKey('events_session.id'), nullable=False)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
+    order = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Отношения
+    session = relationship("Session", back_populates="topics")
+    speakers = relationship(
+        "Speaker",
+        secondary=events_topic_speakers,
+        backref="topics"
+    )
+    
+    def __repr__(self):
+        return f"<Topic(id={self.id}, title={self.title})>"

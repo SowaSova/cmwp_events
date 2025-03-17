@@ -1,5 +1,15 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+import os
+
+
+def validate_file_type(value, media_type):
+    """Валидация типа файла"""
+    ext = os.path.splitext(value.name)[1].lower()
+    if media_type == 'photo' and ext not in ['.jpg', '.jpeg', '.png', '.gif']:
+        raise ValidationError('Для фото разрешены только форматы: jpg, jpeg, png, gif')
+    elif media_type == 'video' and ext not in ['.mp4', '.avi', '.mov', '.wmv']:
+        raise ValidationError('Для видео разрешены только форматы: mp4, avi, mov, wmv')
 
 
 class WelcomeMessage(models.Model):
@@ -19,26 +29,6 @@ class WelcomeMessage(models.Model):
         """Проверка, что существует только одно приветственное сообщение"""
         if not self.pk and WelcomeMessage.objects.exists():
             raise ValidationError("Приветственное сообщение уже существует. Вы можете только редактировать существующее.")
-        return super().save(*args, **kwargs)
-
-
-class Schedule(models.Model):
-    """Модель для хранения расписания"""
-    text = models.TextField(verbose_name="Текст расписания")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-
-    class Meta:
-        verbose_name = "Расписание"
-        verbose_name_plural = "Расписание"
-
-    def __str__(self):
-        return f"Расписание от {self.created_at.strftime('%d.%m.%Y')}"
-
-    def save(self, *args, **kwargs):
-        """Проверка, что существует только одно расписание"""
-        if not self.pk and Schedule.objects.exists():
-            raise ValidationError("Расписание уже существует. Вы можете только редактировать существующее.")
         return super().save(*args, **kwargs)
 
 
@@ -65,17 +55,17 @@ class TelegramUser(models.Model):
 
 
 class Speaker(models.Model):
-    """Модель спикера"""
-    name = models.CharField(max_length=255, verbose_name="ФИО")
-    photo = models.ImageField(upload_to='speakers/', blank=True, null=True, verbose_name="Фото")
-    description = models.TextField(verbose_name="Описание")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    """Спикер"""
+    name = models.CharField('ФИО', max_length=255)
+    photo = models.ImageField('Фото', upload_to='speakers/', blank=True, null=True)
+    description = models.TextField('Описание')
+    is_moderator = models.BooleanField('Модератор', default=False)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата обновления', auto_now=True)
 
     class Meta:
-        verbose_name = "Спикер"
-        verbose_name_plural = "Спикеры"
-        ordering = ['name']
+        verbose_name = 'Спикер'
+        verbose_name_plural = 'Спикеры'
 
     def __str__(self):
         return self.name
@@ -137,7 +127,8 @@ class Question(models.Model):
 class CompanyInfo(models.Model):
     """Информация о компании"""
     description = models.TextField('Описание')
-    video = models.FileField('Видео', upload_to='company/', blank=True, null=True)
+    media = models.FileField('Медиа', upload_to='company/', blank=True, null=True)
+    media_type = models.CharField('Тип медиа', max_length=10, choices=[('photo', 'Фото'), ('video', 'Видео')], blank=True, null=True)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     updated_at = models.DateTimeField('Дата обновления', auto_now=True)
 
@@ -148,8 +139,18 @@ class CompanyInfo(models.Model):
     def __str__(self):
         return 'Информация о компании'
     
+    def clean(self):
+        """Проверка корректности медиа"""
+        if self.media and not self.media_type:
+            raise ValidationError("Необходимо указать тип медиа")
+        
+        # Проверка типа файла в зависимости от выбранного типа медиа
+        if self.media and self.media_type:
+            validate_file_type(self.media, self.media_type)
+    
     def save(self, *args, **kwargs):
         """Проверка, что существует только одна запись информации о компании"""
+        self.clean()
         if not self.pk and CompanyInfo.objects.exists():
             raise ValidationError("Информация о компании уже существует. Вы можете только редактировать существующую.")
         return super().save(*args, **kwargs)
@@ -272,3 +273,71 @@ class AfterQuestionText(models.Model):
         if not self.pk and AfterQuestionText.objects.exists():
             raise ValidationError("Текст после вопроса уже существует. Вы можете только редактировать существующий.")
         return super().save(*args, **kwargs)
+
+
+class EventInfo(models.Model):
+    """Информация о мероприятии"""
+    description = models.TextField('Описание')
+    media = models.FileField('Медиа', upload_to='event/', blank=True, null=True)
+    media_type = models.CharField('Тип медиа', max_length=10, choices=[('photo', 'Фото'), ('video', 'Видео')], blank=True, null=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата обновления', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Информация о мероприятии'
+        verbose_name_plural = 'Информация о мероприятии'
+
+    def __str__(self):
+        return 'Информация о мероприятии'
+    
+    def clean(self):
+        """Проверка корректности медиа"""
+        if self.media and not self.media_type:
+            raise ValidationError("Необходимо указать тип медиа")
+        
+        # Проверка типа файла в зависимости от выбранного типа медиа
+        if self.media and self.media_type:
+            validate_file_type(self.media, self.media_type)
+    
+    def save(self, *args, **kwargs):
+        """Проверка, что существует только одна запись информации о мероприятии"""
+        self.clean()
+        if not self.pk and EventInfo.objects.exists():
+            raise ValidationError("Информация о мероприятии уже существует. Вы можете только редактировать существующую.")
+        return super().save(*args, **kwargs)
+
+
+class Session(models.Model):
+    """Сессия мероприятия"""
+    title = models.CharField('Название', max_length=255)
+    description = models.TextField('Описание')
+    order = models.PositiveIntegerField('Порядок', default=0)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата обновления', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Сессия'
+        verbose_name_plural = 'Сессии'
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
+
+
+class Topic(models.Model):
+    """Тема в рамках сессии"""
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='topics', verbose_name='Сессия')
+    title = models.CharField('Название', max_length=255)
+    description = models.TextField('Описание')
+    speakers = models.ManyToManyField(Speaker, related_name='topics', verbose_name='Спикеры', blank=True)
+    order = models.PositiveIntegerField('Порядок', default=0)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата обновления', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Тема'
+        verbose_name_plural = 'Темы'
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title

@@ -198,4 +198,38 @@ def get_confirm_question_keyboard(from_speaker_view: bool = False, recipient_id:
     
     builder.adjust(1)
     
+    return builder.as_markup()
+
+
+def get_cancel_keyboard() -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру с кнопкой отмены.
+    
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопкой "Отмена".
+    """
+    builder = InlineKeyboardBuilder()
+    
+    builder.button(
+        text="🔙 Назад",
+        callback_data="cancel_question"
+    )
+    
+    return builder.as_markup()
+
+
+def get_home_keyboard() -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру с кнопкой возврата на главную страницу.
+    
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопкой "На главную".
+    """
+    builder = InlineKeyboardBuilder()
+    
+    builder.button(
+        text="🏠 На главную",
+        callback_data="start"
+    )
+    
     return builder.as_markup() 

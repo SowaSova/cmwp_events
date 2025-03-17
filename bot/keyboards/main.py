@@ -8,6 +8,16 @@ def get_main_keyboard() -> InlineKeyboardMarkup:
     Создает главную клавиатуру с основными разделами.
     """
     builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="🎪 О мероприятии",
+        callback_data="event_info"
+    )
+
+    builder.button(
+        text="📋 Расписание",
+        callback_data="schedule"
+    )
     
     builder.button(
         text="👨‍🏫 Задать вопрос спикеру",
@@ -17,11 +27,6 @@ def get_main_keyboard() -> InlineKeyboardMarkup:
     builder.button(
         text="🏢 CMWP",
         callback_data="company"
-    )
-
-    builder.button(
-        text="📋 Расписание",
-        callback_data="schedule"
     )
 
     builder.button(
@@ -41,7 +46,10 @@ def get_main_keyboard() -> InlineKeyboardMarkup:
 
 def get_back_keyboard() -> InlineKeyboardMarkup:
     """
-    Создает клавиатуру с кнопкой "Назад" в главное меню.
+    Создает клавиатуру с кнопкой "Назад".
+    
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопкой "Назад".
     """
     builder = InlineKeyboardBuilder()
     

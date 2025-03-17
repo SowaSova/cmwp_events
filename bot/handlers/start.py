@@ -100,10 +100,18 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
 
     welcome_message = await get_welcome_message()
 
-    await callback.message.edit_text(
-        welcome_message,
-        reply_markup=get_main_keyboard()
-    )
+    try:    
+        await callback.message.edit_text(
+            welcome_message,
+            reply_markup=get_main_keyboard()
+        )
+    except Exception as e:
+        await callback.message.delete()
+        await callback.message.answer(
+            welcome_message,
+            reply_markup=get_main_keyboard()
+        )
+        return
     
     logger.info(f"Пользователь {user_id} ({full_name}) начал взаимодействие с ботом через callback")
     await callback.answer()
