@@ -138,15 +138,29 @@ def get_schedule_speaker_detail_keyboard(speaker_id: int, topic_id: Optional[int
     return builder.as_markup()
 
 
-def get_moderator_keyboard() -> InlineKeyboardMarkup:
+def get_moderator_keyboard(moderator_id: Optional[int] = None) -> InlineKeyboardMarkup:
     """
     Создает клавиатуру для информации о модераторе.
+    
+    Args:
+        moderator_id: ID модератора (опционально)
+        
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопками
     """
     builder = InlineKeyboardBuilder()
+    
+    if moderator_id:
+        builder.button(
+            text="❓ Задать вопрос",
+            callback_data=f"ask_question:{moderator_id}"
+        )
     
     builder.button(
         text="🔙 Назад",
         callback_data="schedule"
     )
+    
+    builder.adjust(1)
     
     return builder.as_markup() 

@@ -80,18 +80,18 @@ async def show_moderator(callback: CallbackQuery):
                 chat_id=callback.message.chat.id,
                 photo=photo,
                 caption=text,
-                reply_markup=get_moderator_keyboard()
+                reply_markup=get_moderator_keyboard(moderator.id)
             )
         else:
             logger.warning(f"Файл фото не найден: {photo_path}")
             await callback.message.answer(
                 text=text,
-                reply_markup=get_moderator_keyboard()
+                reply_markup=get_moderator_keyboard(moderator.id)
             )
     else:
         await callback.message.edit_text(
             text=text,
-            reply_markup=get_moderator_keyboard()
+            reply_markup=get_moderator_keyboard(moderator.id)
         )
     
     logger.info(f"Пользователь {user_id} ({full_name}) просмотрел информацию о модераторе")
