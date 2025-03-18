@@ -89,7 +89,7 @@ def get_speaker_detail_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад к списку спикеров",
+        text="🔙 Назад к списку",
         callback_data="speakers"
     )
     
@@ -154,7 +154,7 @@ def get_speaker_detail_with_slider_keyboard(speaker_id: int, current_position: i
     )
 
     builder.button(
-        text="🔙 Назад к списку спикеров",
+        text="🔙 Назад к списку",
         callback_data="speakers"
     )
 
@@ -194,7 +194,7 @@ def get_search_results_keyboard(speakers: List[Speaker]) -> InlineKeyboardMarkup
     
     # Добавляем кнопку "Назад к списку спикеров"
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад к списку спикеров",
+        text="🔙 Назад к списку",
         callback_data="speakers"
     ))
     

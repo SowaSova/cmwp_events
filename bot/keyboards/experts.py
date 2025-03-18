@@ -89,7 +89,7 @@ def get_expert_detail_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад к списку экспертов",
+        text="🔙 Назад к списку",
         callback_data="experts"
     )
     
@@ -154,7 +154,7 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
     )
 
     builder.button(
-        text="🔙 Назад к списку экспертов",
+        text="🔙 Назад к списку",
         callback_data="experts"
     )
 
@@ -194,7 +194,7 @@ def get_expert_search_results_keyboard(experts: List[Expert]) -> InlineKeyboardM
     
     # Добавляем кнопку "Назад к списку экспертов"
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад к списку экспертов",
+        text="🔙 Назад к списку",
         callback_data="experts"
     ))
     
