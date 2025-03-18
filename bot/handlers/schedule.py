@@ -84,14 +84,12 @@ async def show_moderator(callback: CallbackQuery):
             )
         else:
             logger.warning(f"Файл фото не найден: {photo_path}")
-            await callback.bot.send_message(
-                chat_id=callback.message.chat.id,
+            await callback.message.answer(
                 text=text,
                 reply_markup=get_moderator_keyboard()
             )
     else:
         await callback.message.edit_text(
-            chat_id=callback.message.chat.id,
             text=text,
             reply_markup=get_moderator_keyboard()
         )

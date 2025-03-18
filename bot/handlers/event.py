@@ -91,7 +91,7 @@ async def show_event_info(callback: CallbackQuery):
         await callback.bot.send_message(
             chat_id=callback.message.chat.id,
             text=text,
-            reply_markup=get_back_keyboard("event"),
+            reply_markup=get_back_keyboard(),
         )
     
     logger.info(f"Пользователь {user_id} ({full_name}) просмотрел информацию о мероприятии")
