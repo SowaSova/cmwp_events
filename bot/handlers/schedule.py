@@ -298,8 +298,8 @@ async def back_to_topic(callback: CallbackQuery, state: FSMContext):
 
     if not all([topic_id, session_id]):
         await callback.message.edit_text(
-            "❌ Ошибка при возврате к теме.\n\nПожалуйста, попробуйте позже.",
-            reply_markup=get_sessions_keyboard(await get_sessions())
+            "📋 Расписание\n\nВыберите раздел:",
+            reply_markup=get_schedule_keyboard()
         )
         logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к теме, но данные не найдены")
         await callback.answer()
