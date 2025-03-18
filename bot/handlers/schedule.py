@@ -321,7 +321,7 @@ async def back_to_topic(callback: CallbackQuery, state: FSMContext):
     
     if not session:
         await callback.message.edit_text(
-            "❌ Ошибка при возврате к темам.\n\nПожалуйста, попробуйте позже.",
+            "Сессии:",
             reply_markup=get_sessions_keyboard(await get_sessions())
         )
         logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к темам, но сессия не найдена")
