@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
@@ -107,6 +107,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+FORCE_SCRIPT_NAME = '/events-bot'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -115,8 +116,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files
-MEDIA_URL = '/media/'
+MEDIA_URL = '/events-bot/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL_INTERNAL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -126,6 +128,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Настройки WhiteNoise для обслуживания статических файлов в продакшене
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Настройки для обслуживания медиа-файлов
-MEDIA_URL_INTERNAL = '/media/'  # URL для внутреннего доступа к медиа-файлам
-MEDIA_URL_EXTERNAL = os.environ.get('MEDIA_URL_EXTERNAL', f"http://{os.environ.get('HOST', 'localhost')}:{os.environ.get('PORT', '8000')}/media/")  # URL для внешнего доступа к медиа-файлам
+USE_X_FORWARDED_HOST = True
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = ['https://og-tgbot.cmwp.ru']
+
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SECURE = True

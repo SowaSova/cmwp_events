@@ -19,15 +19,15 @@ services:
     env_file:
       - ./.env
     environment:
-      - HOST=${HOST:-0.0.0.0}
-      - PORT=${PORT:-8000}
+      - HOST=0.0.0.0
+      - PORT=8001
     volumes:
       - ./admin:/app
       - static_value:/app/static/
       - media_value:/app/media/
       - ./logs:/app/logs
     ports:
-      - '${PORT:-8000}:8000'
+      - "8001:8001"
 
   bot:
     build: ./bot
@@ -43,8 +43,8 @@ services:
       - media_value:/app/media:ro
     environment:
       - MEDIA_ROOT=/app/media
-      - HOST=${HOST:-0.0.0.0}
-      - PORT=${PORT:-8000}
+      - HOST=0.0.0.0
+      - PORT=8001
 
 volumes:
   postgres_data:

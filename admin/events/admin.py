@@ -574,7 +574,7 @@ class SurveyQuestionInline(admin.StackedInline):
     classes = ('survey-question-inline',)
     
     class Media:
-        js = ('admin/js/jquery.init.js', 'admin/js/survey_options.js')
+        js = ('admin/js/jquery.init.js', '/events-bot/static/admin/js/survey_options.js')
         css = {
             'all': ('admin/css/forms.css',)
         }
@@ -658,7 +658,7 @@ class SurveyAdmin(admin.ModelAdmin):
     save_on_top = True
     
     class Media:
-        js = ('admin/js/jquery.init.js', 'admin/js/survey_options.js')
+        js = ('admin/js/jquery.init.js', '/events-bot/static/admin/js/survey_options.js')
         css = {
             'all': ('admin/css/forms.css',)
         }
@@ -690,7 +690,7 @@ class SurveyQuestionAdmin(admin.ModelAdmin):
     )
     
     class Media:
-        js = ('admin/js/jquery.init.js', 'admin/js/survey_options.js')
+        js = ('admin/js/jquery.init.js', '/events-bot/static/admin/js/survey_options.js')
         css = {
             'all': ('admin/css/forms.css',),
         }

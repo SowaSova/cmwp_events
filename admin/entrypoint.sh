@@ -63,4 +63,4 @@ python manage.py collectstatic --noinput --clear
 
 # Запускаем Gunicorn для продакшена
 echo "Запуск Gunicorn..."
-exec gunicorn events_admin.wsgi:application --bind 0.0.0.0:8000 --workers 3 --log-file=/app/logs/gunicorn.log --access-logfile=/app/logs/access.log 
+exec gunicorn events_admin.wsgi:application --bind 0.0.0.0:8001 --workers 3 --log-file=/app/logs/gunicorn.log --access-logfile=/app/logs/access.log 

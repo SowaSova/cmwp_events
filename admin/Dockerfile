@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Порт для Django
-EXPOSE 8000
+EXPOSE 8001
 
 # Скрипт для инициализации проекта
 COPY entrypoint.sh /entrypoint.sh

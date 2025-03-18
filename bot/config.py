@@ -18,7 +18,7 @@ LINK_HASH = os.getenv("LINK_HASH", "62e3d677-09c7-450e-bf6b-465db8444af4")
 # Настройки для доступа к медиа-файлам
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', '/app/media')
 HOST = os.getenv('HOST', 'localhost')
-PORT = os.getenv('PORT', '8000')
+PORT = os.getenv('PORT', '8001')
 MEDIA_URL_EXTERNAL = f"http://{HOST}:{PORT}/media/"
 
 # Настройки базы данных
