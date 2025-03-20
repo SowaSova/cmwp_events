@@ -23,33 +23,57 @@ schedule_router = Router()
 async def show_schedule(callback: CallbackQuery):
     """
     Обрабатывает callback-запрос schedule.
-    Отображает раздел "Расписание".
+    Отображает раздел "Расписание" со списком сессий и кнопкой модератора.
     """
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
+
+    # Получаем список сессий
+    sessions = await get_sessions()
+
+    if not sessions:
+        text = "📋 Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
+        keyboard = get_schedule_keyboard()  # Используем старую клавиатуру если сессии не найдены
+    else:
+        text = "<b>📋 Выберите сессию:</b>\n\n"
+        for session in sessions:
+            # Добавляем название и краткое описание сессии
+            text += f"<b>{session.title}</b>\n{session.description}\n\n"
+        keyboard = get_sessions_keyboard(sessions, with_moderator=True)
 
     if hasattr(callback.message, 'photo') and callback.message.photo or hasattr(callback.message, 'video') and callback.message.video:
         try:
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="📋 Расписание\n\nВыберите раздел:",
-                reply_markup=get_schedule_keyboard()
+                text=text,
+                reply_markup=keyboard,
+                parse_mode="HTML"
             )
         except Exception as e:
             logger.warning(f"Не удалось обработать сообщение: {e}")
     else:
-        await callback.message.edit_text(
-            "📋 Расписание\n\nВыберите раздел:",
-            reply_markup=get_schedule_keyboard()
-        )
+        try:
+            await callback.message.edit_text(
+                text,
+                reply_markup=keyboard,
+                parse_mode="HTML"
+            )
+        except Exception as e:
+            await callback.message.delete()
+            await callback.bot.send_message(
+                chat_id=callback.message.chat.id,
+                text=text,
+                reply_markup=keyboard,
+                parse_mode="HTML"
+            )
     
     logger.info(f"Пользователь {user_id} ({full_name}) открыл раздел 'Расписание'")
     await callback.answer()
 
 
 @schedule_router.callback_query(F.data == "moderator")
-async def show_moderator(callback: CallbackQuery):
+async def show_moderator(callback: CallbackQuery, state: FSMContext):
     """
     Обрабатывает callback-запрос moderator.
     Отображает информацию о модераторе.
@@ -71,28 +95,46 @@ async def show_moderator(callback: CallbackQuery):
         return
 
     text = f"👨‍🏫 Модератор: {moderator.name}\n\n{moderator.description}"
+    
+    # Сохраняем предыдущие ID сообщений со спикерами в состоянии
+    data = await state.get_data()
+    speaker_message_ids = data.get("speaker_message_ids", [])
+    
+    # Очищаем список ID сообщений при показе модератора
+    speaker_message_ids = []
+    
+    # Отправляем фото или текст
     if moderator.photo:
         photo_path = os.path.join(MEDIA_ROOT, moderator.photo)
         if os.path.exists(photo_path):
             photo = FSInputFile(photo_path)
             await callback.message.delete()
-            await callback.bot.send_photo(
+            message = await callback.bot.send_photo(
                 chat_id=callback.message.chat.id,
                 photo=photo,
                 caption=text,
                 reply_markup=get_moderator_keyboard(moderator.id)
             )
+            # Сохраняем ID нового сообщения с модератором
+            speaker_message_ids.append(message.message_id)
         else:
             logger.warning(f"Файл фото не найден: {photo_path}")
-            await callback.message.answer(
+            message = await callback.message.answer(
                 text=text,
                 reply_markup=get_moderator_keyboard(moderator.id)
             )
+            # Сохраняем ID нового сообщения с модератором
+            speaker_message_ids.append(message.message_id)
     else:
         await callback.message.edit_text(
             text=text,
             reply_markup=get_moderator_keyboard(moderator.id)
         )
+        # Сохраняем ID текущего сообщения
+        speaker_message_ids.append(callback.message.message_id)
+    
+    # Обновляем состояние с новыми ID сообщений
+    await state.update_data(speaker_message_ids=speaker_message_ids)
     
     logger.info(f"Пользователь {user_id} ({full_name}) просмотрел информацию о модераторе")
     await callback.answer()

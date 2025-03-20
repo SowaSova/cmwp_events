@@ -422,7 +422,7 @@ async def ask_question(callback: CallbackQuery, state: FSMContext):
 async def cancel_question(callback: CallbackQuery, state: FSMContext):
     """
     Обрабатывает нажатие на кнопку "Отмена" в процессе задания вопроса.
-    Отменяет процесс задания вопроса и возвращает пользователя к списку тем.
+    Отменяет процесс задания вопроса и возвращает пользователя к списку тем или списку сессий.
     """
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
@@ -433,12 +433,27 @@ async def cancel_question(callback: CallbackQuery, state: FSMContext):
 
     await state.clear()
 
+    # Если нет topic_id и session_id, значит вопрос был для модератора
+    # или другого объекта без привязки к теме и сессии
     if not all([topic_id, session_id]):
+        # Получаем список сессий и показываем их вместо старой клавиатуры
+        sessions = await get_sessions()
+        
+        if not sessions:
+            text = "📋 Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
+            keyboard = get_schedule_keyboard()
+        else:
+            text = "<b>📋 Выберите сессию:</b>\n\n"
+            for session in sessions:
+                text += f"<b>{session.title}</b>\n{session.description}\n\n"
+            keyboard = get_sessions_keyboard(sessions, with_moderator=True)
+        
         await callback.message.edit_text(
-            "📋 Расписание\n\nВыберите раздел:",
-            reply_markup=get_schedule_keyboard()
+            text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
         )
-        logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к темам, но данные не найдены")
+        logger.info(f"Пользователь {user_id} ({full_name}) отменил отправку вопроса и вернулся к списку сессий")
         await callback.answer()
         return
 
@@ -447,9 +462,22 @@ async def cancel_question(callback: CallbackQuery, state: FSMContext):
     session = await get_session_by_id(session_id)
     
     if not session:
+        # Если сессия не найдена, также показываем список сессий
+        sessions = await get_sessions()
+        
+        if not sessions:
+            text = "📋 Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
+            keyboard = get_schedule_keyboard()
+        else:
+            text = "<b>📋 Выберите сессию:</b>\n\n"
+            for session in sessions:
+                text += f"<b>{session.title}</b>\n{session.description}\n\n"
+            keyboard = get_sessions_keyboard(sessions, with_moderator=True)
+            
         await callback.message.edit_text(
-            "📋 Расписание\n\nВыберите раздел:",
-            reply_markup=get_schedule_keyboard()
+            text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
         )
         logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к темам, но сессия не найдена")
         await callback.answer()

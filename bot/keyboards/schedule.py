@@ -32,9 +32,16 @@ def get_schedule_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def get_sessions_keyboard(sessions: List[Session]) -> InlineKeyboardMarkup:
+def get_sessions_keyboard(sessions: List[Session], with_moderator: bool = False) -> InlineKeyboardMarkup:
     """
     Создает клавиатуру со списком сессий.
+    
+    Args:
+        sessions: Список сессий
+        with_moderator: Добавлять ли кнопку Модератор
+        
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопками
     """
     builder = InlineKeyboardBuilder()
     
@@ -44,9 +51,15 @@ def get_sessions_keyboard(sessions: List[Session]) -> InlineKeyboardMarkup:
             callback_data=f"session:{session.id}"
         )
     
+    if with_moderator:
+        builder.button(
+            text="👨‍🏫 Модератор",
+            callback_data="moderator"
+        )
+    
     builder.button(
         text="🔙 Назад",
-        callback_data="schedule"
+        callback_data="start"
     )
     
     builder.adjust(1)
@@ -68,7 +81,7 @@ def get_topics_keyboard(topics: List[Topic], session_id: int) -> InlineKeyboardM
     
     builder.button(
         text="🔙 Назад",
-        callback_data="sessions"
+        callback_data="schedule"
     )
     
     builder.adjust(1)
