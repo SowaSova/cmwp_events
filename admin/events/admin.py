@@ -158,14 +158,15 @@ class SpeakerAdmin(admin.ModelAdmin):
 @admin.register(Expert)
 class ExpertAdmin(admin.ModelAdmin):
     """Админка для экспертов"""
-    list_display = ('name', 'display_photo', 'unanswered_questions_count', 'view_questions', 'created_at')
+    list_display = ('name', 'display_photo', 'order', 'unanswered_questions_count', 'view_questions', 'created_at')
     search_fields = ('name',)
     readonly_fields = ('created_at', 'updated_at', 'display_photo_large')
     list_filter = ('created_at',)
+    list_editable = ('order',)
     inlines = [QuestionInline]
     fieldsets = (
         (None, {
-            'fields': ('name', 'photo', 'display_photo_large', 'description')
+            'fields': ('name', 'photo', 'display_photo_large', 'description', 'order')
         }),
         ('Информация', {
             'fields': ('created_at', 'updated_at'),

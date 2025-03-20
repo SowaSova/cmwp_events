@@ -10,27 +10,27 @@ def get_main_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="🎪 О мероприятии",
+        text="О мероприятии",
         callback_data="event_info"
     )
 
     builder.button(
-        text="📋 Расписание",
+        text="Расписание",
         callback_data="schedule"
     )
     
     builder.button(
-        text="👨‍🏫 Задать вопрос спикеру",
+        text="Задать вопрос спикеру",
         callback_data="speakers"
     )
     
     builder.button(
-        text="🏢 CMWP",
+        text="CMWP",
         callback_data="company"
     )
 
     builder.button(
-        text="💬 Обсудить",
+        text="💬 Чат мероприятия",
         url=CHANNEL_URL
     )
 

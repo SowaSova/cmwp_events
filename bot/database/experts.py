@@ -34,7 +34,7 @@ async def get_experts(page: int = 1, per_page: int = 10) -> Tuple[List[Expert], 
         
         # Получаем экспертов для текущей страницы
         offset = (page - 1) * per_page
-        query = select(Expert).order_by(Expert.name).offset(offset).limit(per_page)
+        query = select(Expert).order_by(Expert.order, Expert.name).offset(offset).limit(per_page)
         result = await session.execute(query)
         experts = result.scalars().all()
         
@@ -60,7 +60,7 @@ async def search_experts(search_query: str) -> List[Expert]:
     """
     async with async_session() as session:
         # Используем ILIKE для поиска без учета регистра
-        query = select(Expert).where(Expert.name.ilike(f"%{search_query}%")).order_by(Expert.name)
+        query = select(Expert).where(Expert.name.ilike(f"%{search_query}%")).order_by(Expert.order, Expert.name)
         result = await session.execute(query)
         experts = result.scalars().all()
         
@@ -85,7 +85,7 @@ async def get_expert_position(expert_id: int) -> int:
     """
     async with async_session() as session:
         # Получаем список всех ID экспертов, отсортированных по имени
-        query = select(Expert.id).order_by(Expert.name)
+        query = select(Expert.id).order_by(Expert.order, Expert.name)
         result = await session.execute(query)
         expert_ids = result.scalars().all()
         

@@ -82,13 +82,14 @@ class Expert(models.Model):
     name = models.CharField(max_length=255, verbose_name="ФИО")
     photo = models.ImageField(upload_to='experts/', blank=True, null=True, verbose_name="Фото")
     description = models.TextField(verbose_name="Описание")
+    order = models.PositiveIntegerField(verbose_name="Порядок", default=0)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Эксперт"
         verbose_name_plural = "Эксперты"
-        ordering = ['name']
+        ordering = ['order', 'name']
 
     def __str__(self):
         return self.name

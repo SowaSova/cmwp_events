@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import sys
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
@@ -45,6 +45,11 @@ async def main():
     dp.callback_query.middleware(AuthMiddleware())
     dp.message.middleware(SubscriptionMiddleware())
     dp.callback_query.middleware(SubscriptionMiddleware())
+
+    # Настройка фильтра
+    dp.message.filter(F.chat.type == "private")
+    dp.callback_query.filter(F.message.chat.type == "private")
+    
     # Регистрация роутеров
     dp.include_router(main_router)
     

@@ -20,7 +20,7 @@ def get_company_keyboard() -> InlineKeyboardMarkup:
     )
 
     builder.button(
-        text="👨‍🏫 Задать вопрос эксперту",
+        text="Обсудить проект",
         callback_data="experts"
     )
     
