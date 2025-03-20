@@ -15,7 +15,7 @@ def get_company_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="ℹ️ О компании",
+        text="О компании",
         callback_data="company_info"
     )
 

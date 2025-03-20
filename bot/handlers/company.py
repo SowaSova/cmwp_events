@@ -19,6 +19,8 @@ async def show_company(callback: CallbackQuery):
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
 
+    text = "Commonwealth Partnership [CMWP™] — ведущая российская компания, оказывающая консультационные, инвестиционные и агентские услуги в сфере коммерческой недвижимости в России и СНГ."
+
     # Проверяем, есть ли у сообщения фото или видео
     if hasattr(callback.message, 'photo') and callback.message.photo or hasattr(callback.message, 'video') and callback.message.video:
         # Если есть фото или видео, удаляем сообщение и отправляем новое
@@ -26,7 +28,7 @@ async def show_company(callback: CallbackQuery):
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="🏢 CMWP\n\nВыберите раздел:",
+                text=text,
                 reply_markup=get_company_keyboard()
             )
         except Exception as e:
@@ -34,7 +36,7 @@ async def show_company(callback: CallbackQuery):
     else:
         # Если нет фото или видео, редактируем текст
         await callback.message.edit_text(
-            "🏢 CMWP\n\nВыберите раздел:",
+            text,
             reply_markup=get_company_keyboard()
         )
     
