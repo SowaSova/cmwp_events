@@ -30,7 +30,7 @@ async def show_speakers(callback: CallbackQuery):
                 await callback.message.delete()
                 await callback.bot.send_message(
                     chat_id=callback.message.chat.id,
-                    text="🔍 Спикеры не найдены.\n\nВ настоящее время нет доступных спикеров.",
+                    text="Спикеры не найдены.\n\nВ настоящее время нет доступных спикеров.",
                     reply_markup=get_back_keyboard()
                 )
             except Exception as e:
@@ -38,7 +38,7 @@ async def show_speakers(callback: CallbackQuery):
         else:
             # Если нет фото, редактируем текст
             await callback.message.edit_text(
-                "🔍 Спикеры не найдены.\n\nВ настоящее время нет доступных спикеров.",
+                "Спикеры не найдены.\n\nВ настоящее время нет доступных спикеров.",
                 reply_markup=get_back_keyboard()
             )
         
@@ -52,14 +52,14 @@ async def show_speakers(callback: CallbackQuery):
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="👨‍🏫 Спикеры\n\nВыберите спикера, чтобы узнать подробную информацию:",
+                text="Спикеры\n\nВыберите спикера, чтобы узнать подробную информацию:",
                 reply_markup=get_speakers_keyboard(speakers, current_page, total_pages)
             )
         except Exception as e:
             logger.warning(f"Не удалось обработать сообщение: {e}")
     else:
         await callback.message.edit_text(
-            "👨‍🏫 Спикеры\n\nВыберите спикера, чтобы узнать подробную информацию:",
+            "Спикеры\n\nВыберите спикера, чтобы узнать подробную информацию:",
             reply_markup=get_speakers_keyboard(speakers, current_page, total_pages)
         )
     
@@ -83,14 +83,14 @@ async def show_speakers_page(callback: CallbackQuery):
 
     if not speakers:
         await callback.message.edit_text(
-            "❌ Спикеры не найдены.\n\nВозможно, список спикеров пуст."
+            "Спикеры не найдены.\n\nВозможно, список спикеров пуст."
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть список спикеров (страница {page}), но список пуст")
         await callback.answer()
         return
 
     await callback.message.edit_text(
-        "👨‍🏫 Список спикеров\n\nВыберите спикера для просмотра подробной информации:",
+        "Список спикеров\n\nВыберите спикера для просмотра подробной информации:",
         reply_markup=get_speakers_keyboard(speakers, current_page, total_pages)
     )
     
@@ -144,7 +144,7 @@ async def show_speaker_by_id(callback: CallbackQuery, speaker_id: int, user_id: 
     # Если спикер не найден, отправляем сообщение об ошибке
     if speaker is None:
         await callback.message.edit_text(
-            "❌ Спикер не найден.\n\nВозможно, спикер был удален.",
+            "Спикер не найден.\n\nВозможно, спикер был удален.",
             reply_markup=get_speaker_detail_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть несуществующего спикера (ID: {speaker_id})")
@@ -156,7 +156,7 @@ async def show_speaker_by_id(callback: CallbackQuery, speaker_id: int, user_id: 
     position = await get_speaker_position(speaker_id)
     total_speakers = await get_total_speakers_count()
 
-    text = f"👨‍🏫 {speaker.name}\n\n{speaker.description}"
+    text = f"{speaker.name}\n\n{speaker.description}"
 
     await callback.message.delete()
 
@@ -200,7 +200,7 @@ async def start_speaker_search(callback: CallbackQuery, state: FSMContext):
     await state.set_state(SpeakerSearch.waiting_for_query)
 
     await callback.message.edit_text(
-        "🔍 Поиск спикеров\n\nВведите ФИО или часть ФИО спикера для поиска:",
+        "Поиск спикеров\n\nВведите ФИО или часть ФИО спикера для поиска:",
         reply_markup=get_search_keyboard()
     )
     
@@ -219,7 +219,7 @@ async def process_speaker_search(message: Message, state: FSMContext):
 
     if len(search_query) < 3:
         await message.answer(
-            "⚠️ Запрос слишком короткий. Пожалуйста, введите не менее 3 символов.",
+            "Запрос слишком короткий. Пожалуйста, введите не менее 3 символов.",
             reply_markup=get_search_keyboard()
         )
         return
@@ -228,14 +228,14 @@ async def process_speaker_search(message: Message, state: FSMContext):
 
     if not speakers:
         await message.answer(
-            f"🔍 По запросу «{search_query}» ничего не найдено.\n\nПопробуйте изменить запрос.",
+            f"По запросу «{search_query}» ничего не найдено.\n\nПопробуйте изменить запрос.",
             reply_markup=get_search_keyboard()
         )
         logger.info(f"Пользователь {user_id} ({full_name}) выполнил поиск по запросу '{search_query}', но ничего не найдено")
         return
     
     await message.answer(
-        f"🔍 Результаты поиска по запросу «{search_query}»:\n\nНайдено спикеров: {len(speakers)}",
+        f"Результаты поиска по запросу «{search_query}»:\n\nНайдено спикеров: {len(speakers)}",
         reply_markup=get_search_results_keyboard(speakers)
     )
     

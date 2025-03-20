@@ -30,13 +30,13 @@ async def show_event_info(callback: CallbackQuery):
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="❌ Информация о мероприятии не найдена.\n\nПожалуйста, попробуйте позже.",
+                text="Информация о мероприятии не найдена.\n\nПожалуйста, попробуйте позже.",
                 reply_markup=get_back_keyboard()
             )
         else:
             # Если нет фото или видео, редактируем текст
             await callback.message.edit_text(
-                "❌ Информация о мероприятии не найдена.\n\nПожалуйста, попробуйте позже.",
+                "Информация о мероприятии не найдена.\n\nПожалуйста, попробуйте позже.",
                 reply_markup=get_back_keyboard()
             )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть информацию о мероприятии, но она не найдена")

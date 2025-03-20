@@ -38,11 +38,11 @@ class SubscriptionMiddleware(BaseMiddleware):
             # Если пользователь не авторизован, отправляем сообщение
             if isinstance(event, Message):
                 await event.answer(
-                    "⚠️ Для использования бота необходимо перейти по специальной ссылке.",
+                    "Для использования бота необходимо перейти по специальной ссылке.",
                 )
             elif isinstance(event, CallbackQuery):
                 await event.answer(
-                    "⚠️ Для использования бота необходимо перейти по специальной ссылке.",
+                    "Для использования бота необходимо перейти по специальной ссылке.",
                     show_alert=True
                 )
             
@@ -58,12 +58,12 @@ class SubscriptionMiddleware(BaseMiddleware):
             # Если пользователь не подписан, отправляем сообщение с предложением подписаться
             if isinstance(event, Message):
                 await event.answer(
-                    "⚠️ Для продолжения работы с ботом необходимо зайти в группу.",
+                    "Для продолжения работы с ботом необходимо зайти в группу.",
                     reply_markup=get_subscription_keyboard()
                 )
             elif isinstance(event, CallbackQuery):
                 await event.message.answer(
-                    "⚠️ Для продолжения работы с ботом необходимо зайти в группу.",
+                    "Для продолжения работы с ботом необходимо зайти в группу.",
                     reply_markup=get_subscription_keyboard()
                 )
                 await event.answer()

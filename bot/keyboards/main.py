@@ -54,7 +54,7 @@ def get_back_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="start"
     )
     
@@ -68,7 +68,7 @@ def get_home_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🏠 На главную",
+        text="На главную",
         callback_data="start"
     )
     

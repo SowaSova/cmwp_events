@@ -25,7 +25,7 @@ def get_company_keyboard() -> InlineKeyboardMarkup:
     )
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="start"
     )
     
@@ -50,7 +50,7 @@ def get_company_info_keyboard(links: List[CompanyLink] = None) -> InlineKeyboard
     
     # Добавляем кнопку "Назад"
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="company"
     )
     

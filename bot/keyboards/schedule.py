@@ -13,17 +13,17 @@ def get_schedule_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="👨‍🏫 Модератор",
+        text="Модератор",
         callback_data="moderator"
     )
     
     builder.button(
-        text="📋 Сессии",
+        text="Сессии",
         callback_data="sessions"
     )
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="start"
     )
     
@@ -53,12 +53,12 @@ def get_sessions_keyboard(sessions: List[Session], with_moderator: bool = False)
     
     if with_moderator:
         builder.button(
-            text="👨‍🏫 Модератор",
+            text="Модератор",
             callback_data="moderator"
         )
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="start"
     )
     
@@ -80,7 +80,7 @@ def get_topics_keyboard(topics: List[Topic], session_id: int) -> InlineKeyboardM
         )
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="schedule"
     )
     
@@ -97,11 +97,11 @@ def get_schedule_speakers_keyboard(speakers: List[Speaker], topic_id: int, sessi
     
     for speaker in speakers:
         builder.button(
-            text=f"👨‍🏫 {speaker.name}",
+            text=f"{speaker.name}",
             callback_data=f"schedule_speaker:{speaker.id}:{topic_id}"
         )
 
-    builder.button(text="🔙 Назад", callback_data=f"session:{session_id}")
+    builder.button(text="Назад", callback_data=f"session:{session_id}")
     
     builder.adjust(1)
     
@@ -125,24 +125,24 @@ def get_schedule_speaker_detail_keyboard(speaker_id: int, topic_id: Optional[int
 
     if topic_id and session_id:
         builder.button(
-            text="❓ Задать вопрос",
+            text="Задать вопрос",
             callback_data=f"ask_question:{speaker_id}:{topic_id}:{session_id}"
         )
     elif topic_id:
         builder.button(
-            text="❓ Задать вопрос",
+            text="Задать вопрос",
             callback_data=f"ask_question:{speaker_id}:{topic_id}"
         )
     else:
         builder.button(
-            text="❓ Задать вопрос",
+            text="Задать вопрос",
             callback_data=f"ask_question:{speaker_id}"
         )
     
     # Добавляем кнопку "Назад" только для последнего спикера
     if is_last:
         builder.button(
-            text="🔙 Назад",
+            text="Назад",
             callback_data=f"back_to_topic:{topic_id}"
         )
     
@@ -165,12 +165,12 @@ def get_moderator_keyboard(moderator_id: Optional[int] = None) -> InlineKeyboard
     
     if moderator_id:
         builder.button(
-            text="❓ Задать вопрос",
+            text="Задать вопрос",
             callback_data=f"ask_question:{moderator_id}"
         )
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="schedule"
     )
     

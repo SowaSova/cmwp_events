@@ -25,7 +25,7 @@ async def select_speaker_for_question(callback: CallbackQuery, state: FSMContext
 
     if speaker is None:
         await callback.message.edit_text(
-            "❌ Спикер не найден.\n\nВозможно, спикер был удален.",
+            "Спикер не найден.\n\nВозможно, спикер был удален.",
             reply_markup=get_back_to_speakers_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался выбрать несуществующего спикера (ID: {speaker_id}) для вопроса")
@@ -42,14 +42,14 @@ async def select_speaker_for_question(callback: CallbackQuery, state: FSMContext
     # Используем try-except для обработки возможных ошибок при редактировании сообщения
     try:
         await callback.message.edit_text(
-            f"✏️ Введите ваш вопрос для спикера <b>{speaker.name}</b>:",
+            f"Введите ваш вопрос для спикера <b>{speaker.name}</b>:",
             reply_markup=get_back_to_speakers_keyboard(from_speaker_view, speaker_id),
             parse_mode="HTML"
         )
     except Exception as e:
         await callback.message.delete()
         await callback.message.answer(
-            f"✏️ Введите ваш вопрос для спикера <b>{speaker.name}</b>:",
+            f"Введите ваш вопрос для спикера <b>{speaker.name}</b>:",
             reply_markup=get_back_to_speakers_keyboard(from_speaker_view, speaker_id),
             parse_mode="HTML"
         )
@@ -73,7 +73,7 @@ async def select_expert_for_question(callback: CallbackQuery, state: FSMContext)
 
     if expert is None:
         await callback.message.edit_text(
-            "❌ Эксперт не найден.\n\nВозможно, эксперт был удален.",
+            "Эксперт не найден.\n\nВозможно, эксперт был удален.",
             reply_markup=get_back_to_experts_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался выбрать несуществующего эксперта (ID: {expert_id}) для вопроса")
@@ -90,14 +90,14 @@ async def select_expert_for_question(callback: CallbackQuery, state: FSMContext)
     # Используем try-except для обработки возможных ошибок при редактировании сообщения
     try:
         await callback.message.edit_text(
-            f"✏️ Введите ваш вопрос для эксперта <b>{expert.name}</b>:",
+            f"Введите ваш вопрос для эксперта <b>{expert.name}</b>:",
             reply_markup=get_back_to_experts_keyboard(from_expert_view, expert_id),
             parse_mode="HTML"
         )
     except Exception as e:
         await callback.message.delete()
         await callback.message.answer(
-            f"✏️ Введите ваш вопрос для эксперта <b>{expert.name}</b>:",
+            f"Введите ваш вопрос для эксперта <b>{expert.name}</b>:",
             reply_markup=get_back_to_experts_keyboard(from_expert_view, expert_id),
             parse_mode="HTML"
         )
@@ -133,7 +133,7 @@ async def process_question_text(message: Message, state: FSMContext):
 
     if len(question_text) < 5:
         await message.answer(
-            "⚠️ Вопрос слишком короткий. Пожалуйста, сформулируйте более подробный вопрос (не менее 5 символов).",
+            "Вопрос слишком короткий. Пожалуйста, сформулируйте более подробный вопрос (не менее 5 символов).",
             reply_markup=back_keyboard
         )
         return
@@ -147,7 +147,7 @@ async def process_question_text(message: Message, state: FSMContext):
         await state.set_state(AskQuestionStates.waiting_for_name)
 
         await message.answer(
-            "👤 Пожалуйста, введите ваше ФИО:",
+            "Пожалуйста, введите ваше ФИО:",
             reply_markup=get_skip_name_keyboard(from_speaker_view, recipient_id, is_expert)
         )
         
@@ -175,7 +175,7 @@ async def process_question_text(message: Message, state: FSMContext):
             await state.clear()
             
             await message.answer(
-                f"✅ Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
+                f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
                 reply_markup=get_home_keyboard()
             )
             
@@ -210,7 +210,7 @@ async def process_user_name(message: Message, state: FSMContext):
 
     if len(user_name) < 2:
         await message.answer(
-            "⚠️ ФИО слишком короткое. Пожалуйста, введите полное ФИО.",
+            "ФИО слишком короткое. Пожалуйста, введите полное ФИО.",
             reply_markup=get_skip_name_keyboard(from_speaker_view, recipient_id, is_expert)
         )
         return
@@ -238,7 +238,7 @@ async def process_user_name(message: Message, state: FSMContext):
         await state.clear()
         
         await message.answer(
-            f"✅ Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
+            f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
             reply_markup=get_home_keyboard()
         )
         
@@ -292,7 +292,7 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
         await state.clear()
         
         await callback.message.edit_text(
-            f"✅ Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
+            f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
             reply_markup=get_home_keyboard()
         )
         
@@ -328,7 +328,7 @@ async def process_user_contacts(message: Message, state: FSMContext):
     await state.clear()
     
     await message.answer(
-        "✅ Спасибо! Ваша контактная информация сохранена.",
+        "Спасибо! Ваша контактная информация сохранена.",
         reply_markup=get_home_keyboard()
     )
     
@@ -390,7 +390,7 @@ async def ask_question(callback: CallbackQuery, state: FSMContext):
     # Если спикер не найден
     if speaker is None:
         await callback.message.edit_text(
-            "❌ Спикер не найден.\n\nПожалуйста, попробуйте позже.",
+            "Спикер не найден.\n\nПожалуйста, попробуйте позже.",
             reply_markup=get_home_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался задать вопрос спикеру с ID {speaker_id}, но он не найден")
@@ -403,13 +403,13 @@ async def ask_question(callback: CallbackQuery, state: FSMContext):
     
     try:
         await callback.message.edit_text(
-            f"📝 Задайте ваш вопрос для спикера <b>{speaker.name}</b>:",
+            f"Задайте ваш вопрос для спикера <b>{speaker.name}</b>:",
             reply_markup=get_cancel_keyboard(),
             parse_mode="HTML"
         )
     except Exception as e:
         await callback.message.answer(
-            f"📝 Задайте ваш вопрос для спикера <b>{speaker.name}</b>:",
+            f"Задайте ваш вопрос для спикера <b>{speaker.name}</b>:",
             reply_markup=get_cancel_keyboard(),
             parse_mode="HTML"
         )
@@ -440,10 +440,10 @@ async def cancel_question(callback: CallbackQuery, state: FSMContext):
         sessions = await get_sessions()
         
         if not sessions:
-            text = "📋 Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
+            text = "Расписание\n\n Сессии не найдены.\n\nПожалуйста, попробуйте позже."
             keyboard = get_schedule_keyboard()
         else:
-            text = "<b>📋 Выберите сессию:</b>\n\n"
+            text = "<b>Выберите сессию:</b>\n\n"
             for session in sessions:
                 text += f"<b>{session.title}</b>\n{session.description}\n\n"
             keyboard = get_sessions_keyboard(sessions, with_moderator=True)
@@ -466,10 +466,10 @@ async def cancel_question(callback: CallbackQuery, state: FSMContext):
         sessions = await get_sessions()
         
         if not sessions:
-            text = "📋 Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
+            text = "Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
             keyboard = get_schedule_keyboard()
         else:
-            text = "<b>📋 Выберите сессию:</b>\n\n"
+            text = "<b>Выберите сессию:</b>\n\n"
             for session in sessions:
                 text += f"<b>{session.title}</b>\n{session.description}\n\n"
             keyboard = get_sessions_keyboard(sessions, with_moderator=True)
@@ -483,7 +483,7 @@ async def cancel_question(callback: CallbackQuery, state: FSMContext):
         await callback.answer()
         return
     
-    text = f"<b>📋 {session.title}</b>\n\n"
+    text = f"<b>{session.title}</b>\n\n"
     text += "<b>Темы в этой сессии:</b>\n"
     for topic in topics:
         text += f"• <b>{topic.title}</b> - {topic.description}\n"

@@ -64,13 +64,13 @@ async def show_company_info(callback: CallbackQuery):
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="❌ Информация о компании не найдена.\n\nПожалуйста, попробуйте позже.",
+                text="Информация о компании не найдена.\n\nПожалуйста, попробуйте позже.",
                 reply_markup=get_company_info_keyboard()
             )
         else:
             # Если нет фото или видео, редактируем текст
             await callback.message.edit_text(
-                "❌ Информация о компании не найдена.\n\nПожалуйста, попробуйте позже.",
+                "Информация о компании не найдена.\n\nПожалуйста, попробуйте позже.",
                 reply_markup=get_company_info_keyboard()
             )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть информацию о компании, но она не найдена")

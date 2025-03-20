@@ -18,13 +18,13 @@ def get_back_to_speakers_keyboard(from_speaker_view: bool = False, speaker_id: i
     if from_speaker_view and speaker_id:
         # Если пользователь пришел из просмотра спикера, добавляем кнопку "Назад к спикеру"
         builder.button(
-            text="🔙 Назад к спикеру",
+            text="Назад к спикеру",
             callback_data=f"speaker_{speaker_id}"
         )
     else:
         # Иначе добавляем кнопку "Назад к списку спикеров"
         builder.button(
-            text="🔙 Назад к списку спикеров",
+            text="Назад к списку",
             callback_data="speakers"
         )
     
@@ -47,13 +47,13 @@ def get_back_to_experts_keyboard(from_expert_view: bool = False, expert_id: int 
     if from_expert_view and expert_id:
         # Если пользователь пришел из просмотра эксперта, добавляем кнопку "Назад к эксперту"
         builder.button(
-            text="🔙 Назад к эксперту",
+            text="Назад",
             callback_data=f"expert_{expert_id}"
         )
     else:
         # Иначе добавляем кнопку "Назад к списку экспертов"
         builder.button(
-            text="🔙 Назад к списку экспертов",
+            text="Назад к списку",
             callback_data="experts"
         )
     
@@ -75,30 +75,30 @@ def get_skip_name_keyboard(from_speaker_view: bool = False, recipient_id: int = 
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="⏭ Пропустить",
+        text="Пропустить",
         callback_data="skip_name"
     )
     
     if is_expert:
         if from_speaker_view and recipient_id:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data=f"expert_{recipient_id}"
             )
         else:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data="experts"
             )
     else:
         if from_speaker_view and recipient_id:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data=f"speaker_{recipient_id}"
             )
         else:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data="speakers"
             )
     
@@ -122,30 +122,30 @@ def get_skip_contacts_keyboard(from_speaker_view: bool = False, recipient_id: in
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="⏭ Пропустить",
+        text="Пропустить",
         callback_data="skip_contacts"
     )
     
     if is_expert:
         if from_speaker_view and recipient_id:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data=f"expert_{recipient_id}"
             )
         else:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data="experts"
             )
     else:
         if from_speaker_view and recipient_id:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data=f"speaker_{recipient_id}"
             )
         else:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data="speakers"
             )
     
@@ -169,30 +169,30 @@ def get_confirm_question_keyboard(from_speaker_view: bool = False, recipient_id:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="✅ Отправить",
+        text="Отправить",
         callback_data="confirm_question"
     )
     
     if is_expert:
         if from_speaker_view and recipient_id:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data=f"expert_{recipient_id}"
             )
         else:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data="experts"
             )
     else:
         if from_speaker_view and recipient_id:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data=f"speaker_{recipient_id}"
             )
         else:
             builder.button(
-                text="❌ Отмена",
+                text="Отмена",
                 callback_data="speakers"
             )
     
@@ -211,7 +211,7 @@ def get_cancel_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="cancel_question"
     )
     
@@ -228,7 +228,7 @@ def get_home_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🏠 На главную",
+        text="На главную",
         callback_data="start"
     )
     

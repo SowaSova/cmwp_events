@@ -32,10 +32,10 @@ async def show_schedule(callback: CallbackQuery):
     sessions = await get_sessions()
 
     if not sessions:
-        text = "📋 Расписание\n\n❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже."
+        text = "Расписание\n\nСессии не найдены.\n\nПожалуйста, попробуйте позже."
         keyboard = get_schedule_keyboard()  # Используем старую клавиатуру если сессии не найдены
     else:
-        text = "<b>📋 Выберите сессию:</b>\n\n"
+        text = "<b>Выберите сессию:</b>\n\n"
         for session in sessions:
             # Добавляем название и краткое описание сессии
             text += f"<b>{session.title}</b>\n{session.description}\n\n"
@@ -87,14 +87,14 @@ async def show_moderator(callback: CallbackQuery, state: FSMContext):
     # Если модератор не найден
     if moderator is None:
         await callback.message.edit_text(
-            "❌ Модератор не назначен.\n\nПожалуйста, попробуйте позже.",
+            "Модератор не назначен.\n\nПожалуйста, попробуйте позже.",
             reply_markup=get_moderator_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть информацию о модераторе, но он не назначен")
         await callback.answer()
         return
 
-    text = f"👨‍🏫 Модератор: {moderator.name}\n\n{moderator.description}"
+    text = f"Модератор: {moderator.name}\n\n{moderator.description}"
     
     # Сохраняем предыдущие ID сообщений со спикерами в состоянии
     data = await state.get_data()
@@ -155,13 +155,13 @@ async def show_sessions(callback: CallbackQuery):
 
     if not sessions:
         await callback.message.edit_text(
-            "❌ Сессии не найдены.\n\nПожалуйста, попробуйте позже.",
+            "Сессии не найдены.\n\nПожалуйста, попробуйте позже.",
             reply_markup=get_schedule_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть список сессий, но они не найдены")
         return
 
-    text = "<b>📋 Выберите сессию:</b>\n\n"
+    text = "<b>Выберите сессию:</b>\n\n"
     for session in sessions:
         text += f"<b>{session.title}</b>\n{session.description}\n\n"
     try:
@@ -198,7 +198,7 @@ async def show_session(callback: CallbackQuery):
 
     if session is None:
         await callback.message.edit_text(
-            "❌ Сессия не найдена.\n\nПожалуйста, попробуйте позже.",
+            "Сессия не найдена.\n\nПожалуйста, попробуйте позже.",
             reply_markup=get_sessions_keyboard(await get_sessions())
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть информацию о сессии с ID {session_id}, но она не найдена")
@@ -206,7 +206,7 @@ async def show_session(callback: CallbackQuery):
 
     topics = await get_topics_by_session(session_id)
 
-    text = f"<b>📋 {session.title}</b>\n\n"
+    text = f"<b>{session.title}</b>\n\n"
 
     if topics:
         text += "<b>Темы в этой сессии:</b>\n"
@@ -214,7 +214,7 @@ async def show_session(callback: CallbackQuery):
             text += f"• <b>{topic.title}</b> - {topic.description}\n"
 
     if not topics:
-        text += "\n❌ Темы для этой сессии не найдены."
+        text += "\nТемы для этой сессии не найдены."
         await callback.message.edit_text(
             text,
             reply_markup=get_sessions_keyboard(await get_sessions()),
@@ -247,7 +247,7 @@ async def show_topic(callback: CallbackQuery, state: FSMContext):
 
     if topic is None:
         await callback.message.edit_text(
-            "❌ Тема не найдена.\n\nВозможно, тема была удалена.",
+            "Тема не найдена.\n\nВозможно, тема была удалена.",
             reply_markup=get_sessions_keyboard(await get_sessions())
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть несуществующую тему (ID: {topic_id})")
@@ -258,7 +258,7 @@ async def show_topic(callback: CallbackQuery, state: FSMContext):
 
     if not speakers:
         await callback.message.edit_text(
-            f"<b>📋 {topic.title}</b>\n\n{topic.description}\n\n❌ Спикеры не найдены.",
+            f"<b>{topic.title}</b>\n\n{topic.description}\n\nСпикеры не найдены.",
             reply_markup=get_topics_keyboard(await get_topics_by_session(topic.session_id), topic.session_id),
             parse_mode="HTML"
         )
@@ -274,7 +274,7 @@ async def show_topic(callback: CallbackQuery, state: FSMContext):
     # Отправляем каждого спикера отдельным сообщением
     for i, speaker in enumerate(speakers):
         is_last = i == len(speakers) - 1
-        speaker_text = f"👨‍🏫 <b>{speaker.name}</b>\n\n{speaker.description}"
+        speaker_text = f"<b>{speaker.name}</b>\n\n{speaker.description}"
         if speaker.photo:
             photo_path = os.path.join(MEDIA_ROOT, speaker.photo)
             if os.path.exists(photo_path):
@@ -340,7 +340,7 @@ async def back_to_topic(callback: CallbackQuery, state: FSMContext):
 
     if not all([topic_id, session_id]):
         await callback.message.edit_text(
-            "📋 Расписание\n\nВыберите раздел:",
+            "Расписание\n\nВыберите раздел:",
             reply_markup=get_schedule_keyboard()
         )
         logger.error(f"Пользователь {user_id} ({full_name}) попытался вернуться к теме, но данные не найдены")
@@ -413,7 +413,7 @@ async def show_schedule_speaker(callback: CallbackQuery):
 
     if speaker is None:
         await callback.message.edit_text(
-            "❌ Спикер не найден.\n\nПожалуйста, попробуйте позже.",
+            "Спикер не найден.\n\nПожалуйста, попробуйте позже.",
             reply_markup=get_sessions_keyboard(await get_sessions())
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть информацию о спикере с ID {speaker_id}, но он не найден")
@@ -422,7 +422,7 @@ async def show_schedule_speaker(callback: CallbackQuery):
 
     await callback.answer()
 
-    text = f"<b>👨‍🏫 {speaker.name}</b>\n\n{speaker.description}"
+    text = f"<b>{speaker.name}</b>\n\n{speaker.description}"
 
     await callback.message.delete()
 

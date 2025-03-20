@@ -69,13 +69,13 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
     else:
         # Если страница всего одна, добавляем только кнопку поиска
         builder.row(InlineKeyboardButton(
-            text="🔍 Поиск",
+            text="Поиск",
             callback_data="search_experts"
         ))
     
     # Добавляем кнопку "Назад" в главное меню
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="company"
     ))
     
@@ -89,7 +89,7 @@ def get_expert_detail_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад к списку",
+        text="Назад к списку",
         callback_data="experts"
     )
     
@@ -149,12 +149,12 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
     builder.row(*navigation_buttons)
 
     builder.button(
-        text="✏️ Задать вопрос",
+        text="Задать вопрос",
         callback_data=f"ask_expert_{expert_id}"
     )
 
     builder.button(
-        text="🔙 Назад к списку",
+        text="Назад к списку",
         callback_data="experts"
     )
 
@@ -170,7 +170,7 @@ def get_expert_search_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="❌ Отмена",
+        text="Отмена",
         callback_data="experts"
     )
     
@@ -194,7 +194,7 @@ def get_expert_search_results_keyboard(experts: List[Expert]) -> InlineKeyboardM
     
     # Добавляем кнопку "Назад к списку экспертов"
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад к списку",
+        text="Назад к списку",
         callback_data="experts"
     ))
     

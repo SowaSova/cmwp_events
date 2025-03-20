@@ -47,7 +47,7 @@ def get_speakers_keyboard(speakers: List[Speaker], current_page: int, total_page
         
         # Кнопка "Поиск"
         navigation_buttons.append(InlineKeyboardButton(
-            text="🔍 Поиск",
+            text="Поиск",
             callback_data="search_speakers"
         ))
         
@@ -69,13 +69,13 @@ def get_speakers_keyboard(speakers: List[Speaker], current_page: int, total_page
     else:
         # Если страница всего одна, добавляем только кнопку поиска
         builder.row(InlineKeyboardButton(
-            text="🔍 Поиск",
+            text="Поиск",
             callback_data="search_speakers"
         ))
     
     # Добавляем кнопку "Назад" в главное меню
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад",
+        text="Назад",
         callback_data="start"
     ))
     
@@ -89,7 +89,7 @@ def get_speaker_detail_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Назад к списку",
+        text="Назад к списку",
         callback_data="speakers"
     )
     
@@ -149,12 +149,12 @@ def get_speaker_detail_with_slider_keyboard(speaker_id: int, current_position: i
     builder.row(*navigation_buttons)
 
     builder.button(
-        text="✏️ Задать вопрос",
+        text="Задать вопрос",
         callback_data=f"ask_speaker_{speaker_id}"
     )
 
     builder.button(
-        text="🔙 Назад к списку",
+        text="Назад к списку",
         callback_data="speakers"
     )
 
@@ -170,7 +170,7 @@ def get_search_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="❌ Отмена",
+        text="Отмена",
         callback_data="speakers"
     )
     
@@ -194,7 +194,7 @@ def get_search_results_keyboard(speakers: List[Speaker]) -> InlineKeyboardMarkup
     
     # Добавляем кнопку "Назад к списку спикеров"
     builder.row(InlineKeyboardButton(
-        text="🔙 Назад к списку",
+        text="Назад к списку",
         callback_data="speakers"
     ))
     

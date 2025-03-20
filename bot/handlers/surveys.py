@@ -32,7 +32,7 @@ async def show_survey(callback: CallbackQuery):
     
     if not survey:
         await callback.message.edit_text(
-            "❌ Опрос не найден.\n\nПожалуйста, попробуйте позже.",
+            "Опрос не найден.\n\nПожалуйста, попробуйте позже.",
             reply_markup=None
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть опрос {survey_id}, но он не найден")
@@ -65,7 +65,7 @@ async def start_survey(callback: CallbackQuery, state: FSMContext):
     
     if not survey:
         await callback.message.edit_text(
-            "❌ Опрос не найден.\n\nПожалуйста, попробуйте позже.",
+            "Опрос не найден.\n\nПожалуйста, попробуйте позже.",
             reply_markup=None
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался начать опрос {survey_id}, но он не найден")
@@ -75,7 +75,7 @@ async def start_survey(callback: CallbackQuery, state: FSMContext):
     
     if not response:
         await callback.message.edit_text(
-            "❌ Не удалось начать опрос.\n\nПожалуйста, попробуйте позже.",
+            "Не удалось начать опрос.\n\nПожалуйста, попробуйте позже.",
             reply_markup=None
         )
         logger.error(f"Не удалось создать запись об ответе на опрос {survey_id} для пользователя {user_id}")
@@ -86,7 +86,7 @@ async def start_survey(callback: CallbackQuery, state: FSMContext):
     
     if not question:
         await callback.message.edit_text(
-            "❌ В опросе нет вопросов.\n\nПожалуйста, попробуйте позже.",
+            "В опросе нет вопросов.\n\nПожалуйста, попробуйте позже.",
             reply_markup=None
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался начать опрос {survey_id}, но в нем нет вопросов")
@@ -97,7 +97,7 @@ async def start_survey(callback: CallbackQuery, state: FSMContext):
     
     if not options:
         await callback.message.edit_text(
-            "❌ У вопроса нет вариантов ответа.\n\nПожалуйста, попробуйте позже.",
+            "У вопроса нет вариантов ответа.\n\nПожалуйста, попробуйте позже.",
             reply_markup=None
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался ответить на вопрос {question.id}, но у него нет вариантов ответа")
@@ -135,7 +135,7 @@ async def process_survey_option(callback: CallbackQuery, state: FSMContext):
     
     if not response_id:
         await callback.message.edit_text(
-            "❌ Не удалось найти информацию о текущем опросе.\n\nПожалуйста, попробуйте начать опрос заново.",
+            "Не удалось найти информацию о текущем опросе.\n\nПожалуйста, попробуйте начать опрос заново.",
             reply_markup=None
         )
         logger.error(f"Не удалось найти информацию о текущем опросе для пользователя {user_id}")
@@ -146,7 +146,7 @@ async def process_survey_option(callback: CallbackQuery, state: FSMContext):
     
     if not saved:
         await callback.message.edit_text(
-            "❌ Не удалось сохранить ответ.\n\nПожалуйста, попробуйте позже.",
+            "Не удалось сохранить ответ.\n\nПожалуйста, попробуйте позже.",
             reply_markup=None
         )
         logger.error(f"Не удалось сохранить ответ на вопрос {question_id} для пользователя {user_id}")
@@ -160,7 +160,7 @@ async def process_survey_option(callback: CallbackQuery, state: FSMContext):
         
         if not options:
             await callback.message.edit_text(
-                "❌ У вопроса нет вариантов ответа.\n\nПожалуйста, попробуйте позже.",
+                "У вопроса нет вариантов ответа.\n\nПожалуйста, попробуйте позже.",
                 reply_markup=None
             )
             logger.warning(f"Пользователь {user_id} ({full_name}) попытался ответить на вопрос {next_question.id}, но у него нет вариантов ответа")
@@ -179,7 +179,7 @@ async def process_survey_option(callback: CallbackQuery, state: FSMContext):
         await complete_survey_response(response_id)
         
         await callback.message.edit_text(
-            "✅ Спасибо за прохождение опроса!",
+            "Спасибо за прохождение опроса!",
             reply_markup=get_survey_completed_keyboard()
         )
         

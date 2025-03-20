@@ -12,7 +12,7 @@ def get_start_survey_keyboard(survey_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="📝 Пройти опрос",
+        text="Пройти опрос",
         callback_data=f"start_survey:{survey_id}"
     )
     
@@ -43,7 +43,7 @@ def get_survey_completed_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="🔙 Вернуться в главное меню",
+        text="В главное меню",
         callback_data="start"
     )
     

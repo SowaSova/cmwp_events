@@ -40,7 +40,7 @@ async def start_command(message: Message, state: FSMContext):
     
     if not is_authorized and not user.is_authorized:
         await message.answer(
-            "⚠️ Для использования бота необходимо зайти по специальной ссылке."
+            "Для использования бота необходимо зайти по специальной ссылке."
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
         return
@@ -49,7 +49,7 @@ async def start_command(message: Message, state: FSMContext):
 
     if not is_subscribed:
         await message.answer(
-            "⚠️ Для использования бота необходимо зайти в группу.",
+            "Для использования бота необходимо зайти в группу.",
             reply_markup=get_subscription_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
@@ -80,7 +80,7 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
     
     if not user.is_authorized:
         await callback.answer(
-            "⚠️ Для использования бота необходимо перейти по специальной ссылке.",
+            "Для использования бота необходимо перейти по специальной ссылке.",
             show_alert=True
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
@@ -91,7 +91,7 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
 
     if not is_subscribed:
         await callback.message.edit_text(
-            "⚠️ Для использования бота необходимо зайти в группу.",
+            "Для использования бота необходимо зайти в группу.",
             reply_markup=get_subscription_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
@@ -131,7 +131,7 @@ async def check_subscription_callback(callback: CallbackQuery):
     
     if not user_obj.is_authorized:
         await callback.answer(
-            "⚠️ Для использования бота необходимо перейти по специальной ссылке.",
+            "Для использования бота необходимо перейти по специальной ссылке.",
             show_alert=True
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
@@ -141,7 +141,7 @@ async def check_subscription_callback(callback: CallbackQuery):
     
     if is_subscribed:
         await callback.answer(
-            "✅ Спасибо! Теперь вы можете использовать бота.",
+            "Спасибо! Теперь вы можете использовать бота.",
             show_alert=True
         )
 
@@ -153,7 +153,7 @@ async def check_subscription_callback(callback: CallbackQuery):
         logger.info(f"Пользователь {user_id} ({full_name}) зашел в группу")
     else:
         await callback.answer(
-            "❌ Вы не зашли в группу. Пожалуйста, зайдите в группу и нажмите кнопку проверки снова.",
+            "Вы не зашли в группу. Пожалуйста, зайдите в группу и нажмите кнопку проверки снова.",
             show_alert=True
         )
         logger.info(f"Пользователь {user_id} ({full_name}) не зашел в группу")
