@@ -47,7 +47,7 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
         
         # Кнопка "Поиск"
         navigation_buttons.append(InlineKeyboardButton(
-            text="🔍 Поиск",
+            text="Поиск",
             callback_data="search_experts"
         ))
         
