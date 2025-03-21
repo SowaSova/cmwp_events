@@ -173,7 +173,7 @@ async def process_question_text(message: Message, state: FSMContext):
             await state.clear()
             
             await message.answer(
-                f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
+                "Спасибо, ваш вопрос успешно отправлен!",
                 reply_markup=get_home_keyboard()
             )
             
@@ -240,7 +240,7 @@ async def process_user_name(message: Message, state: FSMContext):
         # Если нет текста после вопроса, завершаем процесс
         await state.clear()
         await message.answer(
-            "Ваш вопрос успешно отправлен!",
+            "Спасибо, ваш вопрос успешно отправлен!",
             reply_markup=get_home_keyboard()
         )
         
@@ -297,7 +297,7 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
         # Если нет текста после вопроса, завершаем процесс
         await state.clear()
         await callback.message.edit_text(
-            f"Спасибо, ваш вопрос успешно отправлен!",
+            "Спасибо, ваш вопрос успешно отправлен!",
             reply_markup=get_home_keyboard()
         )
         
