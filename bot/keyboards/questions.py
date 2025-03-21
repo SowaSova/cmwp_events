@@ -18,13 +18,13 @@ def get_back_to_speakers_keyboard(from_speaker_view: bool = False, speaker_id: i
     if from_speaker_view and speaker_id:
         # Если пользователь пришел из просмотра спикера, добавляем кнопку "Назад к спикеру"
         builder.button(
-            text="Назад к спикеру",
+            text="🔙",
             callback_data=f"speaker_{speaker_id}"
         )
     else:
         # Иначе добавляем кнопку "Назад к списку спикеров"
         builder.button(
-            text="Назад к списку",
+            text="🔙",
             callback_data="speakers"
         )
     
@@ -47,13 +47,13 @@ def get_back_to_experts_keyboard(from_expert_view: bool = False, expert_id: int 
     if from_expert_view and expert_id:
         # Если пользователь пришел из просмотра эксперта, добавляем кнопку "Назад к эксперту"
         builder.button(
-            text="Назад",
+            text="🔙",
             callback_data=f"expert_{expert_id}"
         )
     else:
         # Иначе добавляем кнопку "Назад к списку экспертов"
         builder.button(
-            text="Назад к списку",
+            text="🔙",
             callback_data="experts"
         )
     
@@ -211,7 +211,7 @@ def get_cancel_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="Назад",
+        text="🔙",
         callback_data="cancel_question"
     )
     

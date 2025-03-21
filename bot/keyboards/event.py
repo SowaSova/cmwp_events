@@ -9,7 +9,7 @@ def get_event_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     
     builder.button(
-        text="Назад",
+        text="🔙",
         callback_data="start"
     )
     

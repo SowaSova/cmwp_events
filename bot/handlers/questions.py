@@ -147,7 +147,7 @@ async def process_question_text(message: Message, state: FSMContext):
         await state.set_state(AskQuestionStates.waiting_for_name)
 
         await message.answer(
-            "Пожалуйста, введите ваше ФИО:",
+            "Как к вам можно обращаться?",
             reply_markup=get_skip_name_keyboard(from_speaker_view, recipient_id, is_expert)
         )
         
@@ -201,16 +201,17 @@ async def process_user_name(message: Message, state: FSMContext):
         recipient_id = data.get("expert_id")
         recipient_type = "эксперта"
         recipient_name = data.get("expert_name")
-        back_keyboard = get_back_to_experts_keyboard(from_speaker_view, recipient_id)
     else:
         recipient_id = data.get("speaker_id")
         recipient_type = "спикера"
         recipient_name = data.get("speaker_name")
-        back_keyboard = get_back_to_speakers_keyboard(from_speaker_view, recipient_id)
+
+        if recipient_id and not recipient_name:
+            recipient_name = await get_speaker_by_id(recipient_id)
 
     if len(user_name) < 2:
         await message.answer(
-            "ФИО слишком короткое. Пожалуйста, введите полное ФИО.",
+            "Данные слишком короткие.",
             reply_markup=get_skip_name_keyboard(from_speaker_view, recipient_id, is_expert)
         )
         return
@@ -237,10 +238,16 @@ async def process_user_name(message: Message, state: FSMContext):
         # Если нет текста после вопроса, завершаем процесс
         await state.clear()
         
-        await message.answer(
-            f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
-            reply_markup=get_home_keyboard()
-        )
+        if recipient_name:
+            await message.answer(
+                f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
+                reply_markup=get_home_keyboard()
+            )
+        else:
+            await message.answer(
+                "Ваш вопрос успешно отправлен!",
+                reply_markup=get_home_keyboard()
+            )
         
         logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
 
@@ -264,12 +271,12 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
         recipient_id = data.get("expert_id")
         recipient_name = data.get("expert_name")
         recipient_type = "эксперта"
-        back_keyboard = get_back_to_experts_keyboard(from_speaker_view, recipient_id)
     else:
         recipient_id = data.get("speaker_id")
         recipient_name = data.get("speaker_name")
         recipient_type = "спикера"
-        back_keyboard = get_back_to_speakers_keyboard(from_speaker_view, recipient_id)
+        if recipient_id and not recipient_name:
+            recipient_name = await get_speaker_by_id(recipient_id)
 
     if is_expert:
         await create_expert_question(user_id, recipient_id, question_text)
