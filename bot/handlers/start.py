@@ -45,15 +45,15 @@ async def start_command(message: Message, state: FSMContext):
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без авторизации")
         return
 
-    is_subscribed = await check_user_subscription(message.bot, user_id)
+    # is_subscribed = await check_user_subscription(message.bot, user_id)
 
-    if not is_subscribed:
-        await message.answer(
-            "Для использования бота необходимо зайти в группу.",
-            reply_markup=get_subscription_keyboard()
-        )
-        logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
-        return
+    # if not is_subscribed:
+    #     await message.answer(
+    #         "Для использования бота необходимо зайти в группу.",
+    #         reply_markup=get_subscription_keyboard()
+    #     )
+    #     logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
+    #     return
 
     welcome_message = await get_welcome_message()
 
@@ -87,16 +87,16 @@ async def start_callback(callback: CallbackQuery, state: FSMContext):
         await callback.answer()
         return
 
-    is_subscribed = await check_user_subscription(callback.bot, user_id)
+    # is_subscribed = await check_user_subscription(callback.bot, user_id)
 
-    if not is_subscribed:
-        await callback.message.edit_text(
-            "Для использования бота необходимо зайти в группу.",
-            reply_markup=get_subscription_keyboard()
-        )
-        logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
-        await callback.answer()
-        return
+    # if not is_subscribed:
+    #     await callback.message.edit_text(
+    #         "Для использования бота необходимо зайти в группу.",
+    #         reply_markup=get_subscription_keyboard()
+    #     )
+    #     logger.warning(f"Пользователь {user_id} ({full_name}) попытался использовать бота без подписки на канал")
+    #     await callback.answer()
+    #     return
 
     welcome_message = await get_welcome_message()
 
