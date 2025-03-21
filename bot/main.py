@@ -43,8 +43,8 @@ async def main():
     # Регистрация middleware
     dp.message.middleware(AuthMiddleware())
     dp.callback_query.middleware(AuthMiddleware())
-    dp.message.middleware(SubscriptionMiddleware())
-    dp.callback_query.middleware(SubscriptionMiddleware())
+    # dp.message.middleware(SubscriptionMiddleware())
+    # dp.callback_query.middleware(SubscriptionMiddleware())
 
     # Настройка фильтра
     dp.message.filter(F.chat.type == "private")

@@ -205,7 +205,11 @@ async def process_user_name(message: Message, state: FSMContext):
         recipient_name = data.get("speaker_name")
 
         if recipient_id and not recipient_name:
-            recipient_name = await get_speaker_by_id(recipient_id)
+            speaker = await get_speaker_by_id(recipient_id)
+            if speaker:
+                recipient_name = speaker.name
+            else:
+                recipient_name = None
 
     if len(user_name) < 2:
         await message.answer(
@@ -235,17 +239,10 @@ async def process_user_name(message: Message, state: FSMContext):
     else:
         # Если нет текста после вопроса, завершаем процесс
         await state.clear()
-        
-        if recipient_name:
-            await message.answer(
-                f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
-                reply_markup=get_home_keyboard()
-            )
-        else:
-            await message.answer(
-                "Ваш вопрос успешно отправлен!",
-                reply_markup=get_home_keyboard()
-            )
+        await message.answer(
+            "Ваш вопрос успешно отправлен!",
+            reply_markup=get_home_keyboard()
+        )
         
         logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
 
@@ -274,7 +271,11 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
         recipient_name = data.get("speaker_name")
         recipient_type = "спикера"
         if recipient_id and not recipient_name:
-            recipient_name = await get_speaker_by_id(recipient_id)
+            speaker = await get_speaker_by_id(recipient_id)
+            if speaker:
+                recipient_name = speaker.name
+            else:
+                recipient_name = None
 
     if is_expert:
         await create_expert_question(user_id, recipient_id, question_text)
@@ -295,9 +296,8 @@ async def skip_name(callback: CallbackQuery, state: FSMContext):
     else:
         # Если нет текста после вопроса, завершаем процесс
         await state.clear()
-        
         await callback.message.edit_text(
-            f"Ваш вопрос для {recipient_type} {recipient_name} успешно отправлен!",
+            f"Спасибо, ваш вопрос успешно отправлен!",
             reply_markup=get_home_keyboard()
         )
         
@@ -321,10 +321,8 @@ async def process_user_contacts(message: Message, state: FSMContext):
     
     if is_expert:
         recipient_id = data.get("expert_id")
-        back_keyboard = get_back_to_experts_keyboard(from_speaker_view, recipient_id)
     else:
         recipient_id = data.get("speaker_id")
-        back_keyboard = get_back_to_speakers_keyboard(from_speaker_view, recipient_id)
     
     # Обновляем контактную информацию пользователя
     await update_user_contacts(user_id, contacts)

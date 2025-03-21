@@ -211,7 +211,7 @@ async def show_session(callback: CallbackQuery):
     if topics:
         text += "<b>Темы в этой сессии:</b>\n"
         for topic in topics:
-            text += f"• <b>{topic.title}</b> - {topic.description}\n"
+            text += f"<b>{topic.title}</b> {topic.description}\n"
 
     if not topics:
         text += "\nТемы для этой сессии не найдены."
@@ -373,7 +373,7 @@ async def back_to_topic(callback: CallbackQuery, state: FSMContext):
     text = f"<b>📋 {session.title}</b>\n\n"
     text += "<b>Темы в этой сессии:</b>\n"
     for topic in topics:
-        text += f"• <b>{topic.title}</b> - {topic.description}\n"
+        text += f"<b>{topic.title}</b> {topic.description}\n"
     
     # Отправляем сообщение со списком тем
     await callback.message.answer(

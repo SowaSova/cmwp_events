@@ -12,10 +12,10 @@ def get_schedule_keyboard() -> InlineKeyboardMarkup:
     """
     builder = InlineKeyboardBuilder()
     
-    builder.button(
-        text="Модератор",
-        callback_data="moderator"
-    )
+    # builder.button(
+    #     text="Модератор",
+    #     callback_data="moderator"
+    # )
     
     builder.button(
         text="Сессии",
@@ -51,11 +51,11 @@ def get_sessions_keyboard(sessions: List[Session], with_moderator: bool = False)
             callback_data=f"session:{session.id}"
         )
     
-    if with_moderator:
-        builder.button(
-            text="🙋🏼‍♂️ Модератор",
-            callback_data="moderator"
-        )
+    # if with_moderator:
+    #     builder.button(
+    #         text="🙋🏼‍♂️ Модератор",
+    #         callback_data="moderator"
+    #     )
     
     builder.button(
         text="🔙",
