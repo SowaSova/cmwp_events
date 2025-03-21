@@ -90,16 +90,14 @@ async def select_expert_for_question(callback: CallbackQuery, state: FSMContext)
     # Используем try-except для обработки возможных ошибок при редактировании сообщения
     try:
         await callback.message.edit_text(
-            f"Введите ваш вопрос для эксперта <b>{expert.name}</b>:",
-            reply_markup=get_back_to_experts_keyboard(from_expert_view, expert_id),
-            parse_mode="HTML"
+            "Опишите вашу задачу:",
+            reply_markup=get_back_to_experts_keyboard(from_expert_view, expert_id)
         )
     except Exception as e:
         await callback.message.delete()
         await callback.message.answer(
-            f"Введите ваш вопрос для эксперта <b>{expert.name}</b>:",
-            reply_markup=get_back_to_experts_keyboard(from_expert_view, expert_id),
-            parse_mode="HTML"
+            "Опишите вашу задачу:",
+            reply_markup=get_back_to_experts_keyboard(from_expert_view, expert_id)
         )
     
     logger.info(f"Пользователь {user_id} ({full_name}) выбрал эксперта {expert.name} (ID: {expert_id}) для вопроса")

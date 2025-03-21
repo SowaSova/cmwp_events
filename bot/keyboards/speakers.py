@@ -149,7 +149,7 @@ def get_speaker_detail_with_slider_keyboard(speaker_id: int, current_position: i
     builder.row(*navigation_buttons)
 
     builder.button(
-        text="Задать вопрос",
+        text="⁉️ Задать вопрос",
         callback_data=f"ask_speaker_{speaker_id}"
     )
 

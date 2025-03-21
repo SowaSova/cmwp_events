@@ -149,7 +149,7 @@ def get_expert_detail_with_slider_keyboard(expert_id: int, current_position: int
     builder.row(*navigation_buttons)
 
     builder.button(
-        text="Задать вопрос",
+        text="✉️ Оставить заявку",
         callback_data=f"ask_expert_{expert_id}"
     )
 

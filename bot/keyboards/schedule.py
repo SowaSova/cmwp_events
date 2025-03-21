@@ -53,7 +53,7 @@ def get_sessions_keyboard(sessions: List[Session], with_moderator: bool = False)
     
     if with_moderator:
         builder.button(
-            text="Модератор",
+            text="🙋🏼‍♂️ Модератор",
             callback_data="moderator"
         )
     
@@ -125,17 +125,17 @@ def get_schedule_speaker_detail_keyboard(speaker_id: int, topic_id: Optional[int
 
     if topic_id and session_id:
         builder.button(
-            text="Задать вопрос",
+            text="⁉️ Задать вопрос",
             callback_data=f"ask_question:{speaker_id}:{topic_id}:{session_id}"
         )
     elif topic_id:
         builder.button(
-            text="Задать вопрос",
+            text="⁉️ Задать вопрос",
             callback_data=f"ask_question:{speaker_id}:{topic_id}"
         )
     else:
         builder.button(
-            text="Задать вопрос",
+            text="⁉️ Задать вопрос",
             callback_data=f"ask_question:{speaker_id}"
         )
     
@@ -165,7 +165,7 @@ def get_moderator_keyboard(moderator_id: Optional[int] = None) -> InlineKeyboard
     
     if moderator_id:
         builder.button(
-            text="Задать вопрос",
+            text="⁉️ Задать вопрос",
             callback_data=f"ask_question:{moderator_id}"
         )
     
