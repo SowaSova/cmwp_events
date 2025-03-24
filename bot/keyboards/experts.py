@@ -26,52 +26,52 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
             callback_data=f"expert_{expert.id}"
         )
     
-    builder.adjust(1)  # Размещаем кнопки в одну колонку
+    # builder.adjust(1)  # Размещаем кнопки в одну колонку
     
-    # Если страниц больше одной, добавляем кнопки навигации
-    if total_pages > 1:
-        navigation_buttons = []
+    # # Если страниц больше одной, добавляем кнопки навигации
+    # if total_pages > 1:
+    #     navigation_buttons = []
         
-        # Кнопка "Назад" (если не на первой странице)
-        if current_page > 1:
-            navigation_buttons.append(InlineKeyboardButton(
-                text="◀️",
-                callback_data=f"experts_page_{current_page - 1}"
-            ))
-        else:
-            # Пустая кнопка, если на первой странице
-            navigation_buttons.append(InlineKeyboardButton(
-                text=" ",
-                callback_data="empty"
-            ))
+    #     # Кнопка "Назад" (если не на первой странице)
+    #     if current_page > 1:
+    #         navigation_buttons.append(InlineKeyboardButton(
+    #             text="◀️",
+    #             callback_data=f"experts_page_{current_page - 1}"
+    #         ))
+    #     else:
+    #         # Пустая кнопка, если на первой странице
+    #         navigation_buttons.append(InlineKeyboardButton(
+    #             text=" ",
+    #             callback_data="empty"
+    #         ))
         
-        # Кнопка "Поиск"
-        navigation_buttons.append(InlineKeyboardButton(
-            text="Поиск",
-            callback_data="search_experts"
-        ))
+    #     # Кнопка "Поиск"
+    #     navigation_buttons.append(InlineKeyboardButton(
+    #         text="Поиск",
+    #         callback_data="search_experts"
+    #     ))
         
-        # Кнопка "Вперед" (если не на последней странице)
-        if current_page < total_pages:
-            navigation_buttons.append(InlineKeyboardButton(
-                text="▶️",
-                callback_data=f"experts_page_{current_page + 1}"
-            ))
-        else:
-            # Пустая кнопка, если на последней странице
-            navigation_buttons.append(InlineKeyboardButton(
-                text=" ",
-                callback_data="empty"
-            ))
+    #     # Кнопка "Вперед" (если не на последней странице)
+    #     if current_page < total_pages:
+    #         navigation_buttons.append(InlineKeyboardButton(
+    #             text="▶️",
+    #             callback_data=f"experts_page_{current_page + 1}"
+    #         ))
+    #     else:
+    #         # Пустая кнопка, если на последней странице
+    #         navigation_buttons.append(InlineKeyboardButton(
+    #             text=" ",
+    #             callback_data="empty"
+    #         ))
         
-        # Добавляем строку с кнопками навигации
-        builder.row(*navigation_buttons)
-    else:
-        # Если страница всего одна, добавляем только кнопку поиска
-        builder.row(InlineKeyboardButton(
-            text="Поиск",
-            callback_data="search_experts"
-        ))
+    #     # Добавляем строку с кнопками навигации
+    #     builder.row(*navigation_buttons)
+    # else:
+    #     # Если страница всего одна, добавляем только кнопку поиска
+    #     builder.row(InlineKeyboardButton(
+    #         text="Поиск",
+    #         callback_data="search_experts"
+    #     ))
     
     # Добавляем кнопку "Назад" в главное меню
     builder.row(InlineKeyboardButton(

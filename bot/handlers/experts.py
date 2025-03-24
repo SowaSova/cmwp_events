@@ -22,7 +22,7 @@ async def show_experts(callback: CallbackQuery):
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
 
-    experts, current_page, total_pages = await get_experts(page=1, per_page=10)
+    experts, current_page, total_pages = await get_experts(page=1, per_page=30)
     
     # Если экспертов нет, отправляем сообщение
     if not experts:
