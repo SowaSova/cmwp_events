@@ -33,7 +33,7 @@ async def show_experts(callback: CallbackQuery):
                 await callback.message.delete()
                 await callback.bot.send_message(
                     chat_id=callback.message.chat.id,
-                    text="Бизнес линейки не найдены.\n\nВ настоящее время нет доступных экспертов.",
+                    text="Бизнес-линейки не найдены.\n\nВ настоящее время нет доступных экспертов.",
                     reply_markup=get_back_keyboard()
                 )
             except Exception as e:
@@ -41,7 +41,7 @@ async def show_experts(callback: CallbackQuery):
         else:
             # Если нет фото, редактируем текст
             await callback.message.edit_text(
-                "Бизнес линейки не найдены.\n\nВ настоящее время нет доступных экспертов.",
+                "Бизнес-линейки не найдены.\n\nВ настоящее время нет доступных экспертов.",
                 reply_markup=get_back_keyboard()
             )
         
@@ -56,7 +56,7 @@ async def show_experts(callback: CallbackQuery):
             await callback.message.delete()
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
-                text="Бизнес линейки\n\nВыберите бизнес линейку, чтобы узнать подробную информацию:",
+                text="Бизнес-линейки\n\nВыберите бизнес-линейку, чтобы узнать подробную информацию:",
                 reply_markup=get_experts_keyboard(experts, current_page, total_pages)
             )
         except Exception as e:
@@ -64,7 +64,7 @@ async def show_experts(callback: CallbackQuery):
     else:
         # Если нет фото, редактируем текст
         await callback.message.edit_text(
-            "Бизнес линейки\n\nВыберите бизнес линейку, чтобы узнать подробную информацию:",
+            "Бизнес-линейки\n\nВыберите бизнес-линейку, чтобы узнать подробную информацию:",
             reply_markup=get_experts_keyboard(experts, current_page, total_pages)
         )
     
@@ -87,14 +87,14 @@ async def show_experts_page(callback: CallbackQuery):
 
     if not experts:
         await callback.message.edit_text(
-            "Бизнес линейки не найдены.\n\nВозможно, список экспертов пуст."
+            "Бизнес-линейки не найдены.\n\nВозможно, список экспертов пуст."
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть список экспертов (страница {page}), но список пуст")
         await callback.answer()
         return
 
     await callback.message.edit_text(
-        "Список бизнес линеек\n\nВыберите бизнес линейку для просмотра подробной информации:",
+        "Список бизнес-линеек\n\nВыберите бизнес-линейку для просмотра подробной информации:",
         reply_markup=get_experts_keyboard(experts, current_page, total_pages)
     )
     
@@ -150,7 +150,7 @@ async def show_expert_by_id(callback: CallbackQuery, expert_id: int, user_id: in
     # Если эксперт не найден, отправляем сообщение об ошибке
     if expert is None:
         await callback.message.edit_text(
-            "Бизнес линейка не найдена.\n\nВозможно, бизнес линейка была удалена.",
+            "Бизнес-линейка не найдена.\n\nВозможно, бизнес-линейка была удалена.",
             reply_markup=get_expert_detail_keyboard()
         )
         logger.warning(f"Пользователь {user_id} ({full_name}) попытался просмотреть несуществующего эксперта (ID: {expert_id})")
@@ -212,7 +212,7 @@ async def start_expert_search(callback: CallbackQuery, state: FSMContext):
     await state.set_state(ExpertSearch.waiting_for_query)
 
     await callback.message.edit_text(
-        "Поиск бизнес линеек\n\nВведите название или часть названия бизнес линейки для поиска:",
+        "Поиск бизнес-линеек\n\nВведите название или часть названия бизнес-линейки для поиска:",
         reply_markup=get_expert_search_keyboard()
     )
     
@@ -247,7 +247,7 @@ async def process_expert_search(message: Message, state: FSMContext):
         return
     
     await message.answer(
-        f"Результаты поиска по запросу «{search_query}»:\n\nНайдено бизнес линеек: {len(experts)}",
+        f"Результаты поиска по запросу «{search_query}»:\n\nНайдено бизнес-линеек: {len(experts)}",
         reply_markup=get_expert_search_results_keyboard(experts)
     )
     
