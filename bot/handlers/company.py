@@ -19,7 +19,7 @@ async def show_company(callback: CallbackQuery):
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
 
-    text = "Слоган (CMWP) – человек есть мера всех проектов. Миссия – быть полезным не только для бизнеса, но и для людей. Ценности – доброжелательность, открытая коммуникация, надежность, активное вовлечение и поощрение, доверие и ответственность."
+    text = "<b>Москва, 25 марта 2025 г.</b> — Commonwealth Partnership (CMWP) объявила о новом позиционировании компании. Слоган CMWP – человек есть мера всех проектов. Миссия – быть полезным не только для бизнеса, но и для людей. Ценности – доброжелательность, открытая коммуникация, надежность, активное вовлечение и поощрение, доверие и ответственность"
 
     # Проверяем, есть ли у сообщения фото или видео
     if hasattr(callback.message, 'photo') and callback.message.photo or hasattr(callback.message, 'video') and callback.message.video:
@@ -29,7 +29,8 @@ async def show_company(callback: CallbackQuery):
             await callback.bot.send_message(
                 chat_id=callback.message.chat.id,
                 text=text,
-                reply_markup=get_company_keyboard()
+                reply_markup=get_company_keyboard(),
+                parse_mode="HTML"
             )
         except Exception as e:
             logger.warning(f"Не удалось обработать сообщение: {e}")
@@ -37,7 +38,8 @@ async def show_company(callback: CallbackQuery):
         # Если нет фото или видео, редактируем текст
         await callback.message.edit_text(
             text,
-            reply_markup=get_company_keyboard()
+            reply_markup=get_company_keyboard(),
+            parse_mode="HTML"
         )
     
     logger.info(f"Пользователь {user_id} ({full_name}) открыл раздел 'CMWP'")
