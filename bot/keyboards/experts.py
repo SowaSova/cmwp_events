@@ -26,7 +26,7 @@ def get_experts_keyboard(experts: List[Expert], current_page: int, total_pages: 
             callback_data=f"expert_{expert.id}"
         )
     
-    # builder.adjust(1)  # Размещаем кнопки в одну колонку
+    builder.adjust(1)
     
     # # Если страниц больше одной, добавляем кнопки навигации
     # if total_pages > 1:
