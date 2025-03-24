@@ -140,44 +140,54 @@ async def process_question_text(message: Message, state: FSMContext):
 
     user = await get_or_create_user(user_id, full_name, message.from_user.username)
 
-    if not user.real_name:
-        # Устанавливаем состояние ожидания ввода ФИО
-        await state.set_state(AskQuestionStates.waiting_for_name)
+    if is_expert:
+        if not user.real_name:
+            # Устанавливаем состояние ожидания ввода ФИО
+            await state.set_state(AskQuestionStates.waiting_for_name)
 
-        await message.answer(
-            "Как к вам можно обращаться?",
-            reply_markup=get_skip_name_keyboard(from_speaker_view, recipient_id, is_expert)
-        )
+            await message.answer(
+                "Как к вам можно обращаться?",
+                reply_markup=get_skip_name_keyboard(from_speaker_view, recipient_id, is_expert)
+            )
+
+            logger.info(f"Пользователь {user_id} ({full_name}) ввел вопрос и получил запрос на ввод ФИО")
+            return
         
-        logger.info(f"Пользователь {user_id} ({full_name}) ввел вопрос и получил запрос на ввод ФИО")
-    else:
+        # У пользователя уже есть имя - продолжаем обработку для эксперта
         await state.update_data(user_name=user.real_name)
-
-        if is_expert:
-            await create_expert_question(user_id, recipient_id, question_text, user.real_name)
-        else:
-            await create_question(user_id, recipient_id, question_text, user.real_name)
-
+        await create_expert_question(user_id, recipient_id, question_text, user.real_name)
+            
         after_question_text = await get_after_question_text()
-        
+
         if after_question_text:
             await state.set_state(AskQuestionStates.waiting_for_contacts)
-            
             await message.answer(
                 after_question_text,
                 reply_markup=get_home_keyboard()
             )
-            
             logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id}) и получил текст после вопроса")
         else:
             await state.clear()
-            
             await message.answer(
                 "Спасибо, ваш вопрос успешно отправлен!",
                 reply_markup=get_home_keyboard()
             )
-            
             logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
+    else:
+        await state.set_state(AskQuestionStates.waiting_for_contacts)
+        await create_question(user_id, recipient_id, question_text)
+
+        text = (
+            "Благодарим за ваш вопрос. Мы постараемся на него ответить в ходе мероприятия.\n\n"
+            "Оставьте свои контакты для обратной связи, на случай если модератор не успеет его задать."
+        )
+
+        await message.answer(
+            text,
+            reply_markup=get_home_keyboard()
+        )
+        
+        logger.info(f"Пользователь {user_id} ({full_name}) отправил вопрос {recipient_type} {recipient_name} (ID: {recipient_id})")
 
 
 @questions_router.message(AskQuestionStates.waiting_for_name)
