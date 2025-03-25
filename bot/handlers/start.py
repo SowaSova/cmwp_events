@@ -161,3 +161,11 @@ async def check_subscription_callback(callback: CallbackQuery):
     await callback.answer()
 
 
+@start_router.callback_query(F.data == "empty")
+async def empty_callback(callback: CallbackQuery):
+    """
+    Обрабатывает callback-запрос empty.
+    """
+    await callback.answer()
+
+
