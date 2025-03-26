@@ -68,6 +68,7 @@ class Speaker(Base):
     photo = Column(String(255), nullable=True)
     description = Column(Text, nullable=False)
     is_moderator = Column(Boolean, default=False, nullable=False)
+    order = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     

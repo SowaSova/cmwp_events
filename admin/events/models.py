@@ -60,12 +60,14 @@ class Speaker(models.Model):
     photo = models.ImageField('Фото', upload_to='speakers/', blank=True, null=True)
     description = models.TextField('Описание')
     is_moderator = models.BooleanField('Модератор', default=False)
+    order = models.PositiveIntegerField(verbose_name="Порядок", default=0)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     updated_at = models.DateTimeField('Дата обновления', auto_now=True)
 
     class Meta:
         verbose_name = 'Спикер'
         verbose_name_plural = 'Спикеры'
+        ordering = ['order', 'name']
 
     def __str__(self):
         return self.name

@@ -27,7 +27,7 @@ async def get_speakers(page: int = 1, per_page: int = 10) -> Tuple[List[Speaker]
         
         # Получаем спикеров для текущей страницы
         offset = (page - 1) * per_page
-        query = select(Speaker).order_by(Speaker.name).offset(offset).limit(per_page)
+        query = select(Speaker).order_by(Speaker.order, Speaker.name).offset(offset).limit(per_page)
         result = await session.execute(query)
         speakers = result.scalars().all()
         
@@ -82,8 +82,8 @@ async def get_speaker_position(speaker_id: int) -> int:
     Получает позицию спикера в отсортированном списке всех спикеров.
     """
     async with async_session() as session:
-        # Получаем список всех ID спикеров, отсортированных по имени
-        query = select(Speaker.id).order_by(Speaker.name)
+        # Получаем список всех ID спикеров, отсортированных по порядку и затем по имени
+        query = select(Speaker.id).order_by(Speaker.order, Speaker.name)
         result = await session.execute(query)
         speaker_ids = result.scalars().all()
         

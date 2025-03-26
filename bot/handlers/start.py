@@ -168,4 +168,3 @@ async def empty_callback(callback: CallbackQuery):
     """
     await callback.answer()
 
-

@@ -95,14 +95,15 @@ class QuestionInline(admin.TabularInline):
 @admin.register(Speaker)
 class SpeakerAdmin(admin.ModelAdmin):
     """Админка спикеров"""
-    list_display = ('name', 'display_photo', 'is_moderator', 'unanswered_questions_count', 'view_questions', 'created_at')
+    list_display = ('name', 'display_photo', 'order', 'is_moderator', 'unanswered_questions_count', 'view_questions', 'created_at')
     search_fields = ('name',)
     list_filter = ('is_moderator',)
     readonly_fields = ('created_at', 'updated_at', 'display_photo_large')
+    list_editable = ('order',)
     inlines = [QuestionInline]
     fieldsets = (
         (None, {
-            'fields': ('name', 'photo', 'display_photo_large', 'description', 'is_moderator')
+            'fields': ('name', 'photo', 'display_photo_large', 'description', 'order', 'is_moderator')
         }),
         ('Информация', {
             'fields': ('created_at', 'updated_at'),
