@@ -22,7 +22,7 @@ async def show_speakers(callback: CallbackQuery):
     user_id = callback.from_user.id
     full_name = callback.from_user.full_name
 
-    speakers, current_page, total_pages = await get_speakers(page=1, per_page=10)
+    speakers, current_page, total_pages = await get_speakers(page=1, per_page=100)
 
     if not speakers:
         if hasattr(callback.message, 'photo') and callback.message.photo:
