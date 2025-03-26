@@ -210,8 +210,8 @@
           var currentOptionsCount = optionsContainer.find(
             'input[class="option-field"]'
           ).length;
-          if (currentOptionsCount >= 15) {
-            alert('Максимальное количество вариантов ответа - 15');
+          if (currentOptionsCount >= 30) {
+            alert('Максимальное количество вариантов ответа - 30');
             return;
           }
 
