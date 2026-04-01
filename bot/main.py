@@ -24,12 +24,16 @@ async def main():
         logger.error("Ошибка: BOT_TOKEN не найден в переменных окружения")
         sys.exit(1)
 
+    if not LICENSE_KEY:
+        logger.error("Ошибка: LICENSE_KEY не найден в переменных окружения")
+        sys.exit(1)
+
     # Инициализация бота (Telegram + MAX)
     bot = Bot(
         telegram_token=BOT_TOKEN,
         max_token=MAX_BOT_TOKEN or None,
         parse_mode="HTML",
-        license_key=LICENSE_KEY or None,
+        license_key=LICENSE_KEY,
     )
 
     # Инициализация диспетчера
