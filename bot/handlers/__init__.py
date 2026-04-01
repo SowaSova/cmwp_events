@@ -1,4 +1,4 @@
-from aiogram import Router
+from dual_bot import Router
 from .start import start_router
 from .speakers import speakers_router
 from .experts import experts_router

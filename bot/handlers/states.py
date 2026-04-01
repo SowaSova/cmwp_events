@@ -1,4 +1,4 @@
-from aiogram.fsm.state import State, StatesGroup
+from dual_bot import State, StatesGroup
 
 
 class SpeakerSearch(StatesGroup):

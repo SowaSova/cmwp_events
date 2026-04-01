@@ -30,7 +30,9 @@ services:
       - "8001:8001"
 
   bot:
-    build: ./bot
+    build:
+      context: .
+      dockerfile: ./bot/Dockerfile
     restart: always
     depends_on:
       - db

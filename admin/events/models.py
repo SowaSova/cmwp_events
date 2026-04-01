@@ -40,6 +40,7 @@ class TelegramUser(models.Model):
     real_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="ФИО")
     contacts = models.CharField(max_length=255, blank=True, null=True, verbose_name="Контактная информация")
     is_authorized = models.BooleanField(default=False, verbose_name="Авторизован")
+    platform = models.CharField(max_length=10, default="telegram", verbose_name="Платформа")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата регистрации")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 

@@ -1,11 +1,9 @@
 import asyncio
 import logging
 import sys
-from aiogram import Bot, Dispatcher, F
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import BotCommand
+from dual_bot import Bot, Dispatcher, F
 
-from config import BOT_TOKEN
+from config import BOT_TOKEN, MAX_BOT_TOKEN, LICENSE_KEY
 from handlers import main_router
 from middlewares.auth import AuthMiddleware
 from middlewares.subscription import SubscriptionMiddleware
@@ -20,26 +18,32 @@ async def main():
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
         stream=sys.stdout
     )
-    
+
     # Проверка наличия токена
     if not BOT_TOKEN:
         logger.error("Ошибка: BOT_TOKEN не найден в переменных окружения")
         sys.exit(1)
-    
-    # Инициализация бота и диспетчера
-    bot = Bot(token=BOT_TOKEN)
-    
-    # Инициализация хранилища состояний
-    storage = MemoryStorage()
-    
-    # Инициализация диспетчера с хранилищем состояний
-    dp = Dispatcher(storage=storage)
 
-    # Регистрация команд бота
-    await bot.set_my_commands([
-        BotCommand(command="start", description="Запустить бота")
-    ])
-    
+    # Инициализация бота (Telegram + MAX)
+    bot = Bot(
+        telegram_token=BOT_TOKEN,
+        max_token=MAX_BOT_TOKEN or None,
+        parse_mode="HTML",
+        license_key=LICENSE_KEY or None,
+    )
+
+    # Инициализация диспетчера
+    dp = Dispatcher()
+
+    # Регистрация команд бота через startup hook
+    @dp.startup
+    async def on_startup():
+        if bot.telegram:
+            from aiogram.types import BotCommand
+            await bot.telegram.set_my_commands([
+                BotCommand(command="start", description="Запустить бота")
+            ])
+
     # Регистрация middleware
     dp.message.middleware(AuthMiddleware())
     dp.callback_query.middleware(AuthMiddleware())
@@ -49,20 +53,17 @@ async def main():
     # Настройка фильтра
     dp.message.filter(F.chat.type == "private")
     dp.callback_query.filter(F.message.chat.type == "private")
-    
+
     # Регистрация роутеров
     dp.include_router(main_router)
-    
+
     # Инициализация планировщика опросов
     init_scheduler(bot)
-    
+
     # Запуск бота
     logger.info("✅ Бот запущен")
 
-    try:
-        await dp.start_polling(bot)
-    finally:
-        await bot.session.close()
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":

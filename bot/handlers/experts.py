@@ -1,7 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message, FSInputFile
-from aiogram.fsm.context import FSMContext
-from aiogram.filters import StateFilter
+from dual_bot import Router, F, CallbackQuery, Message, FSInputFile, FSMContext
 import os
 
 from utils.logger import logger
@@ -220,7 +217,7 @@ async def start_expert_search(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@experts_router.message(StateFilter(ExpertSearch.waiting_for_query))
+@experts_router.message(ExpertSearch.waiting_for_query)
 async def process_expert_search(message: Message, state: FSMContext):
     """
     Обрабатывает сообщение с запросом поиска экспертов.

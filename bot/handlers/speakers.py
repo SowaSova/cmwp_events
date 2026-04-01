@@ -1,7 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message, FSInputFile
-from aiogram.fsm.context import FSMContext
-from aiogram.filters import StateFilter
+from dual_bot import Router, F, CallbackQuery, Message, FSInputFile, FSMContext
 import os
 
 from utils.logger import logger
@@ -208,7 +205,7 @@ async def start_speaker_search(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@speakers_router.message(StateFilter(SpeakerSearch.waiting_for_query))
+@speakers_router.message(SpeakerSearch.waiting_for_query)
 async def process_speaker_search(message: Message, state: FSMContext):
     """
     Обрабатывает сообщение с запросом поиска спикеров.

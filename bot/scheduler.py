@@ -1,6 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from aiogram import Bot
+from dual_bot import BotProxy
 import asyncio
 import logging
 
@@ -16,15 +16,17 @@ logging.getLogger('apscheduler.scheduler').setLevel(logging.CRITICAL)
 
 class SurveyScheduler:
     """Класс для планирования отправки опросов"""
-    
-    def __init__(self, bot: Bot):
+
+    def __init__(self, bot):
         """
         Инициализирует планировщик.
-        
+
         Args:
-            bot: Экземпляр бота
+            bot: Экземпляр DualBot
         """
         self.bot = bot
+        self.tg_proxy = BotProxy(bot.telegram, "telegram") if bot.telegram else None
+        self.max_proxy = BotProxy(bot.max, "maxapi") if bot.max else None
         # Отключаем логирование при создании планировщика
         self.scheduler = AsyncIOScheduler(logger=None)
         self.is_running = False
@@ -54,21 +56,29 @@ class SurveyScheduler:
         """Проверяет опросы, которые нужно отправить"""
         try:
             surveys = await get_pending_surveys()
-            
+
             if not surveys:
                 return
-            
+
             users = await get_all_users()
-            
+
             if not users:
                 return
-            
+
             for survey in surveys:
-                await send_survey_to_users(self.bot, survey.id, users)
+                # Разделяем пользователей по платформам
+                tg_users = [u for u in users if getattr(u, 'platform', 'telegram') == 'telegram']
+                max_users = [u for u in users if getattr(u, 'platform', 'telegram') == 'maxapi']
+
+                if tg_users and self.tg_proxy:
+                    await send_survey_to_users(self.tg_proxy, survey.id, tg_users)
+                if max_users and self.max_proxy:
+                    await send_survey_to_users(self.max_proxy, survey.id, max_users)
+
                 await mark_survey_as_sent(survey.id)
-                
+
                 await asyncio.sleep(1)
-        
+
         except Exception as e:
             logger.error(f"Ошибка при проверке опросов: {e}")
 
@@ -76,7 +86,7 @@ class SurveyScheduler:
 survey_scheduler = None
 
 
-def init_scheduler(bot: Bot):
+def init_scheduler(bot):
     """
     Инициализирует планировщик.
     

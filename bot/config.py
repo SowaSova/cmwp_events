@@ -10,6 +10,8 @@ load_dotenv(BASE_DIR / '.env')
 
 # Настройки бота
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+MAX_BOT_TOKEN = os.getenv("MAX_BOT_TOKEN")
+LICENSE_KEY = os.getenv("LICENSE_KEY")
 CHANNEL_URL = os.getenv("CHANNEL_URL")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 CONTACT_SUPPORT_URL = os.getenv("CONTACT_SUPPORT_URL")

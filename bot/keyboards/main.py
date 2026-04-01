@@ -1,5 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from dual_bot import InlineKeyboardMarkup, InlineKeyboardButton, InlineKeyboardBuilder
 from config import CONTACT_SUPPORT_URL, CHANNEL_URL
 
 

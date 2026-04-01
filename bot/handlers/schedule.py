@@ -1,5 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, FSInputFile
+from dual_bot import Router, F, CallbackQuery, FSInputFile
 import os
 import re
 
@@ -14,7 +13,7 @@ from keyboards import (
     get_schedule_speakers_keyboard, get_schedule_speaker_detail_keyboard, get_moderator_keyboard
 )
 from config import MEDIA_ROOT
-from aiogram.fsm.context import FSMContext
+from dual_bot import FSMContext
 
 schedule_router = Router()
 

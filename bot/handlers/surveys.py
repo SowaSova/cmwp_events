@@ -1,6 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
-from aiogram.fsm.context import FSMContext
+from dual_bot import Router, F, CallbackQuery, Message, FSMContext
 
 from utils.logger import logger
 from database import (

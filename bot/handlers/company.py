@@ -1,5 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, FSInputFile
+from dual_bot import Router, F, CallbackQuery, FSInputFile
 import os
 
 from utils.logger import logger

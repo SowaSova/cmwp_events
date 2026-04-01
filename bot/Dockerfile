@@ -16,11 +16,15 @@ ENV TZ=Europe/Moscow
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Установка зависимостей
-COPY requirements.txt .
+COPY bot/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Установка dual_bot из dist/
+COPY dist/ /dist
+RUN pip install --no-cache-dir /dist
+
 # Копирование проекта
-COPY . .
+COPY bot/ .
 
 # Запуск бота
 CMD ["python", "main.py"] 

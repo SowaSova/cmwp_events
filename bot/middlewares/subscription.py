@@ -1,6 +1,5 @@
 from typing import Callable, Dict, Any, Awaitable
-from aiogram import BaseMiddleware, Bot
-from aiogram.types import Message, CallbackQuery
+from dual_bot import BaseMiddleware, Message, CallbackQuery
 
 from utils import check_user_subscription
 from keyboards import get_subscription_keyboard
@@ -12,12 +11,12 @@ class SubscriptionMiddleware(BaseMiddleware):
     Middleware для проверки подписки пользователя на канал.
     Если пользователь не подписан или не авторизован, то запрос не будет обработан.
     """
-    
-    async def __call__(
+
+    async def on_event(
         self,
-        handler: Callable[[Message | CallbackQuery], Awaitable[Any]],
         event: Message | CallbackQuery,
-        data: Dict[str, Any]
+        data: Dict[str, Any],
+        handler: Callable,
     ) -> Any:
         
         # Если это callback_query с проверкой подписки, пропускаем проверку
@@ -29,7 +28,7 @@ class SubscriptionMiddleware(BaseMiddleware):
             return await handler(event, data)
         
         # Получаем бота из данных
-        bot: Bot = data["bot"]
+        bot = data["bot"]
         user = event.from_user
         
         # Проверяем авторизацию пользователя

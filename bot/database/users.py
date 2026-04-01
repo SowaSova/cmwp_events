@@ -6,7 +6,7 @@ from .models import TelegramUser
 from utils.logger import logger
 
 
-async def get_or_create_user(user_id: int, full_name: str, username: str = None, deep_link: str = None, is_authorized: bool = False) -> TelegramUser:
+async def get_or_create_user(user_id: int, full_name: str, username: str = None, deep_link: str = None, is_authorized: bool = False, platform: str = "telegram") -> TelegramUser:
     """
     Получает или создает пользователя в базе данных.
     
@@ -38,6 +38,7 @@ async def get_or_create_user(user_id: int, full_name: str, username: str = None,
                 username=username,
                 full_name=full_name,
                 is_authorized=is_authorized,
+                platform=platform,
                 created_at=now,
                 updated_at=now
             )

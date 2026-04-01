@@ -1,7 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
+from dual_bot import Router, F, Message, CallbackQuery, Command, FSMContext
 
 from utils.logger import logger
 from utils import check_user_subscription
@@ -36,7 +33,8 @@ async def start_command(message: Message, state: FSMContext):
         else:
             logger.warning(f"Пользователь {user_id} ({full_name}) использовал неверный deep link: {deep_link}")
     
-    user = await get_or_create_user(user_id, full_name, username, deep_link, is_authorized)
+    platform = getattr(message, 'platform', 'telegram') or 'telegram'
+    user = await get_or_create_user(user_id, full_name, username, deep_link, is_authorized, platform=str(platform))
     
     if not is_authorized and not user.is_authorized:
         await message.answer(

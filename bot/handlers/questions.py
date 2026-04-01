@@ -1,6 +1,4 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
-from aiogram.fsm.context import FSMContext
+from dual_bot import Router, F, CallbackQuery, Message, FSMContext
 
 from utils.logger import logger
 from database import get_speaker_by_id, get_expert_by_id, get_or_create_user, create_question, create_expert_question, update_user_real_name, update_user_contacts, get_after_question_text, get_topic_by_id, get_speakers_by_topic, get_topics_by_session, get_session_by_id, get_topics_by_session, get_sessions

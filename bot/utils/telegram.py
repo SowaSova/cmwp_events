@@ -1,9 +1,8 @@
-from aiogram import Bot
 from config import CHANNEL_ID
 from .logger import logger
 
 
-async def check_user_subscription(bot: Bot, user_id: int) -> bool:
+async def check_user_subscription(bot, user_id: int) -> bool:
     """
     Проверяет, подписан ли пользователь на канал.
     """

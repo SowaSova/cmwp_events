@@ -1,5 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from dual_bot import InlineKeyboardMarkup, InlineKeyboardBuilder
 from typing import List
 
 from database.models import CompanyLink

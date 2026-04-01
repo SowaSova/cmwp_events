@@ -1,5 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from dual_bot import InlineKeyboardMarkup, InlineKeyboardButton, InlineKeyboardBuilder
 
 
 def get_back_to_speakers_keyboard(from_speaker_view: bool = False, speaker_id: int = None) -> InlineKeyboardMarkup:
